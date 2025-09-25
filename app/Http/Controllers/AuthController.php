@@ -46,7 +46,6 @@ class AuthController extends Controller
     {
         return Inertia::render("Auth/Signup");
     }
-
     public function singup_update(Request $request)
     {
         $request->validate([
@@ -104,6 +103,32 @@ class AuthController extends Controller
             $user->save();
 
             return redirect()->route('ux.dashboard')->with('success', 'একাউন্ট এর ধরন সফলভাবে সংরক্ষিত হয়েছে।');
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
+        }
+    }
+
+
+    // forgate password ===============
+    public function forgate()
+    {
+        return Inertia::render("Auth/Forget");
+    }
+
+    public function forgate_update(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'ইমেইল প্রদান করুন',
+            'emial.email' => 'ইমেইল সঠিক নয়',
+            'email.exists' => 'এই ইমেইলটি খুজে পাওয়া যায়নি',
+        ]);
+
+        try {
+            
+
+            return redirect()->back()->with('success', 'পাসওয়ার্ড রিসেট লিঙ্ক আপনার ইমেইলে পাঠানো হয়েছে।');
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }

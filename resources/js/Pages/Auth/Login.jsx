@@ -37,7 +37,7 @@ function Login() {
                                 error={errors.password}
                             />
                             <Link
-                                href="#"
+                                href={route('forgate')}
                                 className="absolute bottom- right-0 text-sm text-gray-500 hover:text-neutral duration-300 hover:underline"
                             >
                                 পাসওয়ার্ড ভুলে গেছেন?

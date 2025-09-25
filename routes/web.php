@@ -14,6 +14,7 @@ Route::middleware('guest')->controller(AuthController::class)->prefix('auth')->g
     // normal login
     Route::get('/login', 'login')->name('login');
     Route::get('/singup', 'singup')->name('singup');
+    Route::get('/forgate', 'forgate')->name('forgate');
 
     Route::post('/login', 'login_store')->name('login.post');
     Route::post('/singup', 'singup_update')->name('singup.post');
