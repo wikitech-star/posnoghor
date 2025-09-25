@@ -1,0 +1,200 @@
+import React, { useEffect, useState } from "react";
+import {
+    ENGLISH_DATE_TO_BANGLA,
+    ENGLISH_TO_BANGLA,
+} from "../../../Utils/Helper";
+import Header from "../../../Components/Parts/Header";
+import { Frown, Pen, Plus, Trash } from "lucide-react";
+import Model from "../../../Components/Parts/Model";
+import Input from "../../../Components/Parts/Input";
+import { Form, router, useForm } from "@inertiajs/react";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+export default function GroupClass({ data, filters }) {
+    const [modelOpen, setModleOpen] = useState(false);
+
+    // search
+    const [search, setSearch] = useState(filters.search ?? "");
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            router.get(
+                route("ux.group.class"),
+                { search: search },
+                {
+                    preserveState: true,
+                    replace: true,
+                }
+            );
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
+    }, [search]);
+
+    // from
+    const classFom = useForm({
+        id: "",
+        class_name: "",
+    });
+
+    const submitClassForm = (e) => {
+        e.preventDefault();
+        classFom.post(route("ux.group.class.store"), {
+            onSuccess: () => {
+                setModleOpen(false);
+                classFom.reset();
+            },
+        });
+    };
+
+    // get edit data
+    const [editDataGetingProcess, setEditDataGetingProcessing] =
+        useState(false);
+    const getEditData = (id) => {
+        setEditDataGetingProcessing(true);
+        axios
+            .get(route("ux.group.class.show", id))
+            .then((res) => {
+                if (res.status === 200) {
+                    classFom.setData("id", res.data.data.id);
+                    classFom.setData("class_name", res.data.data.name);
+                    setModleOpen(true);
+                    setEditDataGetingProcessing(false);
+                }
+            })
+            .catch((err) => {
+                setEditDataGetingProcessing(false);
+                toast.error("ক্লাসের তথ্য পাওয়া যায়নি, আবার চেষ্টা করুন!");
+            });
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-box space-y-6">
+            <div className="flex-between gap-4">
+                <div>
+                    <h4 className="text-lg font-medium">গ্রুপ ক্লাস</h4>
+                    <p className="text-sm text-gray-500">
+                        এখানে আপনি গ্রুপ ক্লাস এর তথ্য দেখতে পারবেন
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <input
+                        type="search"
+                        className="input input-sm"
+                        placeholder="সার্স..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <button
+                        onClick={() => setModleOpen(true)}
+                        className="btn btn-primary btn-sm"
+                    >
+                        <Plus size={13} />
+                        নতুন গ্রুপ ক্লাস
+                    </button>
+                </div>
+            </div>
+
+            <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+                {data.data.length === 0 ? (
+                    <div className="p-6 text-center text-base text-gray-500">
+                        <Frown size={20} className="mx-auto mb-3" />
+                        কোন তথ্য পাওয়া যায়নি!
+                    </div>
+                ) : (
+                    <table className="table">
+                        <thead className="bg-primary text-neutral">
+                            <tr>
+                                <th></th>
+                                <th>ক্লাসের নাম</th>
+                                <th>তৈরি করেছেন</th>
+                                <th>সর্বশেষ পরিবর্তন</th>
+                                <th>কার্যক্রম</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.data.map((item, index) => (
+                                <tr key={item.id}>
+                                    <th>{ENGLISH_TO_BANGLA(index + 1)}</th>
+                                    <td>{item.name}</td>
+                                    <td>
+                                        {ENGLISH_DATE_TO_BANGLA(
+                                            item.created_at
+                                        )}
+                                    </td>
+                                    <td>
+                                        {ENGLISH_DATE_TO_BANGLA(
+                                            item.updated_at
+                                        )}
+                                    </td>
+                                    <td>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                disabled={editDataGetingProcess}
+                                                title="সম্পাদন করুন"
+                                                onClick={() =>
+                                                    getEditData(item.id)
+                                                }
+                                                className="btn btn-xs btn-info"
+                                            >
+                                                <Pen size={12} />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    confirm(
+                                                        "আপনি কি নিশ্চিত ক্লাসটি মুছে ফেলতেচান?"
+                                                    ) &&
+                                                    router.get(
+                                                        route(
+                                                            "ux.group.class.del",
+                                                            { id: item.id }
+                                                        )
+                                                    )
+                                                }
+                                                className="btn btn-xs btn-error"
+                                            >
+                                                <Trash size={12} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
+            {/* add or update model */}
+            <Model
+                model={modelOpen}
+                title={classFom.data.id ? "ক্লাস আপডেট" : "নতুন ক্লাস"}
+                setModel={setModleOpen}
+            >
+                <form onSubmit={submitClassForm}>
+                    <div className="space-y-4">
+                        <Input
+                            label="ক্লাস নাম*"
+                            name="class_name"
+                            type="text"
+                            placeholder="ক্লাস নাম লিখুন"
+                            value={classFom.data.class_name}
+                            onChange={(e) =>
+                                classFom.setData("class_name", e.target.value)
+                            }
+                            error={classFom.errors.class_name}
+                        />
+
+                        <button
+                            type="submit"
+                            disabled={classFom.processing}
+                            className="btn btn-sm btn-primary w-full"
+                        >
+                            {classFom.data.id ? "আপডেট" : "সংরক্ষণ"} করুন
+                        </button>
+                    </div>
+                </form>
+            </Model>
+
+            <Header title="গ্রুপ ক্লাস" />
+        </div>
+    );
+}
