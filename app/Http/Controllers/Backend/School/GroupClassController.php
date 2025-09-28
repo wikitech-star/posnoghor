@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\School;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupClass;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -71,6 +72,11 @@ class GroupClassController extends Controller
     public function destroy($id)
     {
         try {
+            // if any subject assigned to this class, then don't allow to delete
+            if (Subject::where('class_id', $id)->count() > 0) {
+                return redirect()->back()->with('error', 'এই ক্লাসে সাবজেক্ট অ্যাসাইন করা আছে, তাই এটি মুছে ফেলা যাবে না।');
+            }
+
             $class = GroupClass::find($id);
             if (!$class) {
                 return redirect()->back()->with('error', 'ক্লাস পাওয়া যায়নি।');
