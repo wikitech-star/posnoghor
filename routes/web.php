@@ -7,20 +7,23 @@ use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
 
 
-// guest routes
+// public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// guest auth routes
 Route::middleware('guest')->controller(AuthController::class)->prefix('auth')->group(function () {
-    // normal login
     Route::get('/login', 'login')->name('login');
     Route::get('/singup', 'singup')->name('singup');
     Route::get('/forgate', 'forgate')->name('forgate');
+    Route::get('/reset-password', 'resetpassword')->name('reset.password');
 
     Route::post('/login', 'login_store')->name('login.post');
     Route::post('/singup', 'singup_update')->name('singup.post');
+    Route::post('/forgate', 'forgate_update')->name('forgate.post');
+    Route::post('/reset-password', 'update_resetpassword')->name('resetpassword.post');
 });
 
-// select role
+// auth routes for role selection
 Route::controller(AuthController::class)->middleware('hasRole')->prefix('auth')->group(function () {
     Route::get('/role-selcet', 'choice_role')->name('role.select');
     Route::post('/role-selcet', 'choice_role_update')->name('role.select.post');
@@ -39,7 +42,6 @@ Route::middleware(['auth', 'hasNoRole'])->prefix('app')->group(function () {
         Route::get('/group-class/{id}', 'show')->name('ux.group.class.show');
         Route::get('/group-class/del/{id}', 'destroy')->name('ux.group.class.del');
     });
-
 
     // single routes
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

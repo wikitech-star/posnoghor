@@ -16,7 +16,7 @@ const ADMIN_SIDEBAR = [
         isTitle: true,
     },
     {
-        name: "ক্লাস ম্যানেজমেন্ট",
+        name: "শ্রেনী ম্যানেজমেন্ট",
         icon: University,
         link: route("ux.group.class"),
         active: ["ux.group.class"],

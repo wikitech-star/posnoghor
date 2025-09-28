@@ -13,12 +13,14 @@ class GlobalMialer extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $subject;
+    public array $data;
+    public $view;
+    public function __construct(string $subject, array $data, string $view)
     {
-        //
+        $this->subject = $subject;
+        $this->data = $data;
+        $this->view = $view;
     }
 
     /**
@@ -27,7 +29,7 @@ class GlobalMialer extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Global Mialer',
+            subject: $this->subject,
         );
     }
 
@@ -37,7 +39,7 @@ class GlobalMialer extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: $this->view,
         );
     }
 

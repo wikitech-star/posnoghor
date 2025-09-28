@@ -71,9 +71,9 @@ export default function GroupClass({ data, filters }) {
         <div className="bg-white p-6 rounded-box space-y-6">
             <div className="flex-between gap-4">
                 <div>
-                    <h4 className="text-lg font-medium">গ্রুপ ক্লাস</h4>
+                    <h4 className="text-lg font-medium">সকল শ্রেনী</h4>
                     <p className="text-sm text-gray-500">
-                        এখানে আপনি গ্রুপ ক্লাস এর তথ্য দেখতে পারবেন
+                        এখানে আপনি সকল শ্রেনী এর তথ্য দেখতে পারবেন।
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export default function GroupClass({ data, filters }) {
                         className="btn btn-primary btn-sm"
                     >
                         <Plus size={13} />
-                        নতুন গ্রুপ ক্লাস
+                        নতুন শ্রেনী
                     </button>
                 </div>
             </div>
@@ -105,7 +105,7 @@ export default function GroupClass({ data, filters }) {
                         <thead className="bg-primary text-neutral">
                             <tr>
                                 <th></th>
-                                <th>ক্লাসের নাম</th>
+                                <th>শ্রেনী নাম</th>
                                 <th>তৈরি করেছেন</th>
                                 <th>সর্বশেষ পরিবর্তন</th>
                                 <th>কার্যক্রম</th>
@@ -166,16 +166,16 @@ export default function GroupClass({ data, filters }) {
             {/* add or update model */}
             <Model
                 model={modelOpen}
-                title={classFom.data.id ? "ক্লাস আপডেট" : "নতুন ক্লাস"}
+                title={classFom.data.id ? "শ্রেনী আপডেট" : "নতুন শ্রেনী"}
                 setModel={setModleOpen}
             >
                 <form onSubmit={submitClassForm}>
                     <div className="space-y-4">
                         <Input
-                            label="ক্লাস নাম*"
+                            label="শ্রেনীর নাম*"
                             name="class_name"
                             type="text"
-                            placeholder="ক্লাস নাম লিখুন"
+                            placeholder="শ্রেনীর নাম লিখুন"
                             value={classFom.data.class_name}
                             onChange={(e) =>
                                 classFom.setData("class_name", e.target.value)
@@ -194,7 +194,7 @@ export default function GroupClass({ data, filters }) {
                 </form>
             </Model>
 
-            <Header title="গ্রুপ ক্লাস" />
+            <Header title="সকল শ্রেনী" />
         </div>
     );
 }

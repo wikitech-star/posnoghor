@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\GlobalMialer;
 use App\Models\GroupClass;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -126,9 +130,92 @@ class AuthController extends Controller
         ]);
 
         try {
-            
 
-            return redirect()->back()->with('success', 'পাসওয়ার্ড রিসেট লিঙ্ক আপনার ইমেইলে পাঠানো হয়েছে।');
+            // if has previues token delete it
+            Password::deleteToken(User::where('email', $request->email)->first());
+
+            // get user data
+            $user = User::where('email', $request->email)->first();
+
+            // টোকেন জেনারেট করো
+            $token = Password::createToken($user);
+
+            // Reset URL বানাও
+            $resetUrl = url(route('reset.password', [
+                'email' => $user->email,
+                'token' => $token,
+            ], false));
+
+            // Custom mail পাঠাও
+            $subject = "রিসেট পাসওয়ার্ড - " . config('app.name');
+            $data = [
+                'name' => $user->name ?? 'ব্যবহারকারী',
+                'resetUrl' => $resetUrl
+            ];
+            $view = "Mail.forget";
+
+            Mail::to($request->email)->send(new GlobalMialer($subject, $data, $view));
+
+            return redirect()->route('login')->with('success', 'পাসওয়ার্ড রিসেট লিঙ্ক আপনার ইমেইলে পাঠানো হয়েছে।');
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
+        }
+    }
+
+
+    // reset password ==============
+    public function resetpassword(Request $request)
+    {
+        // if token and email not set
+        if (!$request->token || !$request->email) {
+            return redirect()->route('forgate')->with('error', 'পাসওয়ার্ড রিসেট লিঙ্ক সঠিক নয়। আবার চেষ্টা করুন।');
+        }
+
+        // check time valid or not
+        $status = Password::tokenExists(User::where('email', $request->email)->first(), $request->token);
+        if (!$status) {
+            return redirect()->route('forgate')->with('error', 'পাসওয়ার্ড রিসেট লিঙ্কের সময়সীমা শেষ হয়ে গেছে। আবার চেষ্টা করুন।');
+        }
+
+        return Inertia::render("Auth/ResetPassword", [
+            'email' => $request->email,
+            'token' => $request->token,
+        ]);
+    }
+
+    public function update_resetpassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|min:6|confirmed'
+        ], [
+            'password.required' => 'নতুন পাসওয়ার্ড প্রদান করুন',
+            'password.min' => "নতুন পাসওয়ার্ড সর্বনিম্ন ৬ সংখ্যার হতে পারবে।",
+            'password.confirmed' => "নতুন পাসওয়ার্ড এবং নিশ্চিতকরণ পাসওয়ার্ড মিলছে না।"
+        ]);
+
+        try {
+            // if token and email not set
+            if (!$request->token || !$request->email) {
+                return redirect()->route('forgate')->with('error', 'পাসওয়ার্ড রিসেট লিঙ্ক সঠিক নয়। আবার চেষ্টা করুন।');
+            }
+
+            // পাসওয়ার্ড রিসেট করো
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->forceFill([
+                        'password' => bcrypt($password)
+                    ])->setRememberToken(Str::random(60));
+
+                    $user->save();
+                }
+            );
+
+            if ($status == Password::PASSWORD_RESET) {
+                return redirect()->route('login')->with('success', 'পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে। এখন লগইন করুন।');
+            } else {
+                return redirect()->back()->with('error', __($status));
+            }
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }
