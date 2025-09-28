@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\School\GroupClassController;
+use App\Http\Controllers\Backend\School\SubjectsController;
 use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,14 @@ Route::middleware(['auth', 'hasNoRole'])->prefix('app')->group(function () {
         Route::post('/group-class', 'store')->name('ux.group.class.store');
         Route::get('/group-class/{id}', 'show')->name('ux.group.class.show');
         Route::get('/group-class/del/{id}', 'destroy')->name('ux.group.class.del');
+    });
+
+    // subject routes
+    Route::controller(SubjectsController::class)->group(function () {
+        Route::get('/subjects', 'index')->name('ux.subjects');
+        Route::post('/subjects', 'store')->name('ux.subjects.store');
+        Route::get('/subjects/{id}', 'show')->name('ux.subjects.show');
+        Route::get('/subjects/del/{id}', 'destroy')->name('ux.subjects.del');
     });
 
     // single routes

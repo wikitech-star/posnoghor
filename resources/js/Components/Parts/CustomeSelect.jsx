@@ -1,10 +1,11 @@
 import Select from "react-select";
 
-export default function CustomSelect({ options, className, onChange }) {
+export default function CustomSelect({ options, className, onChange, defaultInputValue }) {
     return (
         <Select
             onChange={(selectedOption) => onChange(selectedOption)}
             options={options}
+            defaultInputValue={defaultInputValue}
             className={`w-full rounded-box ${className}`}
             classNames={{
                 control: ({ isFocused }) =>

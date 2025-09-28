@@ -1,4 +1,4 @@
-import { Home, University } from "lucide-react";
+import { Book, Home, University } from "lucide-react";
 
 const ADMIN_SIDEBAR = [
     {
@@ -20,6 +20,12 @@ const ADMIN_SIDEBAR = [
         icon: University,
         link: route("ux.group.class"),
         active: ["ux.group.class"],
+    },
+    {
+        name: "সকল বিষয়",
+        icon: Book,
+        link: route("ux.subjects"),
+        active: ["ux.subjects"],
     },
 ];
 

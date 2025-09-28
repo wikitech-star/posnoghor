@@ -7,17 +7,17 @@ import Header from "../../../Components/Parts/Header";
 import { Frown, Pen, Plus, Trash } from "lucide-react";
 import Model from "../../../Components/Parts/Model";
 import Input from "../../../Components/Parts/Input";
+import Select from "../../../Components/Parts/Select";
 import { Form, router, useForm } from "@inertiajs/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export default function GroupClass({ data, filters }) {
+export default function Subject({ data, filters, class_data }) {
     const [modelOpen, setModleOpen] = useState(false);
 
     // search
     const [search, setSearch] = useState(filters.search ?? "");
     const isFirstRender = useRef(true);
-
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -26,7 +26,7 @@ export default function GroupClass({ data, filters }) {
 
         const delayDebounceFn = setTimeout(() => {
             router.get(
-                route("ux.group.class"),
+                route("ux.subjects"),
                 { search: search },
                 {
                     preserveState: true,
@@ -39,17 +39,19 @@ export default function GroupClass({ data, filters }) {
     }, [search]);
 
     // from
-    const classFom = useForm({
+    const subjectform = useForm({
         id: "",
-        class_name: "",
+        name: "",
+        class_id: "",
+        subject_code: "",
     });
 
-    const submitClassForm = (e) => {
+    const submitSubjectForm = (e) => {
         e.preventDefault();
-        classFom.post(route("ux.group.class.store"), {
+        subjectform.post(route("ux.subjects.store"), {
             onSuccess: () => {
                 setModleOpen(false);
-                classFom.reset();
+                subjectform.reset();
             },
         });
     };
@@ -60,18 +62,20 @@ export default function GroupClass({ data, filters }) {
     const getEditData = (id) => {
         setEditDataGetingProcessing(true);
         axios
-            .get(route("ux.group.class.show", id))
+            .get(route("ux.subjects.show", id))
             .then((res) => {
                 if (res.status === 200) {
-                    classFom.setData("id", res.data.data.id);
-                    classFom.setData("class_name", res.data.data.name);
+                    subjectform.setData("id", res.data.data.id);
+                    subjectform.setData("name", res.data.data.name);
+                    subjectform.setData("class_id", res.data.data.class_id);
+                    subjectform.setData("subject_code", res.data.data.code);
                     setModleOpen(true);
                     setEditDataGetingProcessing(false);
                 }
             })
             .catch((err) => {
                 setEditDataGetingProcessing(false);
-                toast.error("ক্লাসের তথ্য পাওয়া যায়নি, আবার চেষ্টা করুন!");
+                toast.error("বিষয়ের তথ্য পাওয়া যায়নি, আবার চেষ্টা করুন!");
             });
     };
 
@@ -79,9 +83,9 @@ export default function GroupClass({ data, filters }) {
         <div className="bg-white p-6 rounded-box space-y-6">
             <div className="flex-between gap-4">
                 <div>
-                    <h4 className="text-lg font-medium">সকল শ্রেনী</h4>
+                    <h4 className="text-lg font-medium">সকল বিষয়</h4>
                     <p className="text-sm text-gray-500">
-                        এখানে আপনি সকল শ্রেনী এর তথ্য দেখতে পারবেন।
+                        এখানে আপনি সকল বিষয় এর তথ্য দেখতে পারবেন।
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -97,7 +101,7 @@ export default function GroupClass({ data, filters }) {
                         className="btn btn-primary btn-sm"
                     >
                         <Plus size={13} />
-                        নতুন শ্রেনী
+                        নতুন বিষয়
                     </button>
                 </div>
             </div>
@@ -113,7 +117,9 @@ export default function GroupClass({ data, filters }) {
                         <thead className="bg-primary text-neutral">
                             <tr>
                                 <th></th>
-                                <th>শ্রেনী নাম</th>
+                                <th>শ্রেনী</th>
+                                <th>বিষয়</th>
+                                <th>বিষয় কোড</th>
                                 <th>তৈরি করেছেন</th>
                                 <th>সর্বশেষ পরিবর্তন</th>
                                 <th>কার্যক্রম</th>
@@ -123,7 +129,9 @@ export default function GroupClass({ data, filters }) {
                             {data.data.map((item, index) => (
                                 <tr key={item.id}>
                                     <th>{ENGLISH_TO_BANGLA(index + 1)}</th>
+                                    <td>{item.class}</td>
                                     <td>{item.name}</td>
+                                    <td>{item.code}</td>
                                     <td>
                                         {ENGLISH_DATE_TO_BANGLA(
                                             item.created_at
@@ -149,11 +157,11 @@ export default function GroupClass({ data, filters }) {
                                             <button
                                                 onClick={() =>
                                                     confirm(
-                                                        "আপনি কি নিশ্চিত শ্রেনীটি মুছে ফেলতেচান?"
+                                                        "আপনি কি নিশ্চিত বিষয়টি মুছে ফেলতে চান?"
                                                     ) &&
                                                     router.get(
                                                         route(
-                                                            "ux.group.class.del",
+                                                            "ux.subjects.del",
                                                             { id: item.id }
                                                         )
                                                     )
@@ -174,35 +182,61 @@ export default function GroupClass({ data, filters }) {
             {/* add or update model */}
             <Model
                 model={modelOpen}
-                title={classFom.data.id ? "শ্রেনী আপডেট" : "নতুন শ্রেনী"}
+                title={subjectform.data.id ? "বিষয় আপডেট" : "নতুন বিষয়"}
                 setModel={setModleOpen}
             >
-                <form onSubmit={submitClassForm}>
+                <form onSubmit={submitSubjectForm}>
                     <div className="space-y-4">
+                        <Select
+                            label="বিষয়ের নাম*"
+                            name="class_name"
+                            options={class_data}
+                            value={subjectform.data.class_id}
+                            onChange={(e) =>
+                                subjectform.setData("class_id", e.target.value)
+                            }
+                            error={subjectform.errors.name}
+                        />
+
                         <Input
-                            label="শ্রেনীর নাম*"
+                            label="বিষয়ের নাম*"
                             name="class_name"
                             type="text"
-                            placeholder="শ্রেনীর নাম লিখুন"
-                            value={classFom.data.class_name}
+                            placeholder="বিষয়ের নাম লিখুন"
+                            value={subjectform.data.name}
                             onChange={(e) =>
-                                classFom.setData("class_name", e.target.value)
+                                subjectform.setData("name", e.target.value)
                             }
-                            error={classFom.errors.class_name}
+                            error={subjectform.errors.name}
+                        />
+
+                        <Input
+                            label="বিষয়ের কোড"
+                            name="subject_code"
+                            type="number"
+                            placeholder="বিষয়ের কোড লিখুন"
+                            value={subjectform.data.subject_code}
+                            onChange={(e) =>
+                                subjectform.setData(
+                                    "subject_code",
+                                    e.target.value
+                                )
+                            }
+                            error={subjectform.errors.subject_code}
                         />
 
                         <button
                             type="submit"
-                            disabled={classFom.processing}
+                            disabled={subjectform.processing}
                             className="btn btn-sm btn-primary w-full"
                         >
-                            {classFom.data.id ? "আপডেট" : "সংরক্ষণ"} করুন
+                            {subjectform.data.id ? "আপডেট" : "সংরক্ষণ"} করুন
                         </button>
                     </div>
                 </form>
             </Model>
 
-            <Header title="সকল শ্রেনী" />
+            <Header title="সকল বিষয়" />
         </div>
     );
 }
