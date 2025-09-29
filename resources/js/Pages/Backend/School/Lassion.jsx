@@ -7,27 +7,40 @@ import Header from "../../../Components/Parts/Header";
 import { Frown, Pen, Plus, Trash } from "lucide-react";
 import Model from "../../../Components/Parts/Model";
 import Input from "../../../Components/Parts/Input";
+import Select from "../../../Components/Parts/Select";
 import { Form, router, useForm } from "@inertiajs/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export default function GroupClass({ data, filters }) {
+export default function Lassion({ data, filters, class_data, subject_data }) {
     const [modelOpen, setModleOpen] = useState(false);
+
+    // page loading
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        router.on("start", () => {
+            setLoading(true);
+        });
+        router.on("finish", () => {
+            setLoading(false);
+        });
+    }, []);
 
     // search
     const [search, setSearch] = useState(filters.search ?? "");
+    const [classSearch, setClassSearch] = useState(filters.class_id ?? "");
     const isFirstRender = useRef(true);
 
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return; // প্রথমবারে কিছু করবে না
+            return;
         }
 
         const delayDebounceFn = setTimeout(() => {
             router.get(
-                route("ux.group.class"),
-                { search: search },
+                route("ux.lassion"),
+                { search: search, class_id: classSearch },
                 {
                     preserveState: true,
                     replace: true,
@@ -36,20 +49,22 @@ export default function GroupClass({ data, filters }) {
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [search]);
+    }, [search, classSearch]);
 
-    // from
-    const classFom = useForm({
+    // form
+    const lassionForm = useForm({
         id: "",
-        class_name: "",
+        lassion_name: "",
+        class_id: "",
+        subject_id: "",
     });
 
-    const submitClassForm = (e) => {
+    const submitLassionForm = (e) => {
         e.preventDefault();
-        classFom.post(route("ux.group.class.store"), {
+        lassionForm.post(route("ux.lassion.store"), {
             onSuccess: () => {
                 setModleOpen(false);
-                classFom.reset();
+                lassionForm.reset();
             },
         });
     };
@@ -60,18 +75,20 @@ export default function GroupClass({ data, filters }) {
     const getEditData = (id) => {
         setEditDataGetingProcessing(true);
         axios
-            .get(route("ux.group.class.show", id))
+            .get(route("ux.lassion.show", id))
             .then((res) => {
                 if (res.status === 200) {
-                    classFom.setData("id", res.data.data.id);
-                    classFom.setData("class_name", res.data.data.name);
+                    lassionForm.setData("id", res.data.data.id);
+                    lassionForm.setData("lassion_name", res.data.data.name);
+                    lassionForm.setData("class_id", res.data.data.class_id);
+                    lassionForm.setData("subject_id", res.data.data.subject_id);
                     setModleOpen(true);
                     setEditDataGetingProcessing(false);
                 }
             })
             .catch((err) => {
                 setEditDataGetingProcessing(false);
-                toast.error("ক্লাসের তথ্য পাওয়া যায়নি, আবার চেষ্টা করুন!");
+                toast.error("অধায়ের তথ্য পাওয়া যায়নি, আবার চেষ্টা করুন!");
             });
     };
 
@@ -79,9 +96,9 @@ export default function GroupClass({ data, filters }) {
         <div className="bg-white p-6 rounded-box space-y-6">
             <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-4">
                 <div>
-                    <h4 className="text-lg font-medium">সকল শ্রেনী</h4>
+                    <h4 className="text-lg font-medium">সকল অধ্যায়</h4>
                     <p className="text-sm text-gray-500">
-                        এখানে আপনি সকল শ্রেনী এর তথ্য দেখতে পারবেন।
+                        এখানে আপনি সকল অধ্যায় এর তথ্য দেখতে পারবেন।
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -113,7 +130,9 @@ export default function GroupClass({ data, filters }) {
                         <thead className="bg-primary text-neutral">
                             <tr>
                                 <th></th>
-                                <th>শ্রেনী নাম</th>
+                                <th>শ্রেনী</th>
+                                <th>বিষয়</th>
+                                <th>অধ্যায়</th>
                                 <th>তৈরি করেছেন</th>
                                 <th>সর্বশেষ পরিবর্তন</th>
                                 <th>কার্যক্রম</th>
@@ -123,6 +142,8 @@ export default function GroupClass({ data, filters }) {
                             {data.data.map((item, index) => (
                                 <tr key={item.id}>
                                     <th>{ENGLISH_TO_BANGLA(index + 1)}</th>
+                                    <td>{item.class}</td>
+                                    <td>{item.subject}</td>
                                     <td>{item.name}</td>
                                     <td>
                                         {ENGLISH_DATE_TO_BANGLA(
@@ -153,7 +174,7 @@ export default function GroupClass({ data, filters }) {
                                                     ) &&
                                                     router.get(
                                                         route(
-                                                            "ux.group.class.del",
+                                                            "ux.lassion.del",
                                                             { id: item.id }
                                                         )
                                                     )
@@ -174,35 +195,66 @@ export default function GroupClass({ data, filters }) {
             {/* add or update model */}
             <Model
                 model={modelOpen}
-                title={classFom.data.id ? "শ্রেনী আপডেট" : "নতুন শ্রেনী"}
+                loading={loading}
+                title={lassionForm.data.id ? "অধ্যায় আপডেট" : "নতুন অধ্যায়"}
                 setModel={setModleOpen}
             >
-                <form onSubmit={submitClassForm}>
+                <form onSubmit={submitLassionForm}>
                     <div className="space-y-4">
-                        <Input
-                            label="শ্রেনীর নাম*"
-                            name="class_name"
-                            type="text"
-                            placeholder="শ্রেনীর নাম লিখুন"
-                            value={classFom.data.class_name}
+                        <Select
+                            label="শ্রেণী*"
+                            name="class_id"
+                            options={class_data}
+                            value={lassionForm.data.class_id}
+                            onChange={(e) => {
+                                lassionForm.setData("class_id", e.target.value);
+                                setClassSearch(e.target.value);
+                            }}
+                            error={lassionForm.errors.class_id}
+                        />
+
+                        <Select
+                            label="বিষয়*"
+                            name="subject_data"
+                            options={subject_data}
+                            value={lassionForm.data.subject_id}
+                            disabled={!lassionForm.data.class_id}
                             onChange={(e) =>
-                                classFom.setData("class_name", e.target.value)
+                                lassionForm.setData(
+                                    "subject_id",
+                                    e.target.value
+                                )
                             }
-                            error={classFom.errors.class_name}
+                            error={lassionForm.errors.subject_id}
+                        />
+
+                        <Input
+                            label="অধ্যায়ের নাম*"
+                            name="lassion_name"
+                            type="text"
+                            placeholder="অধ্যায়ের নাম লিখুন"
+                            value={lassionForm.data.lassion_name}
+                            onChange={(e) =>
+                                lassionForm.setData(
+                                    "lassion_name",
+                                    e.target.value
+                                )
+                            }
+                            error={lassionForm.errors.lassion_name}
                         />
 
                         <button
                             type="submit"
-                            disabled={classFom.processing}
+                            disabled={lassionForm.processing}
                             className="btn btn-sm btn-primary w-full"
                         >
-                            {classFom.data.id ? "আপডেট" : "সংরক্ষণ"} করুন
+                            {lassionForm.data.id ? "আপডেট" : "সংরক্ষণ"} করুন
                         </button>
                     </div>
                 </form>
             </Model>
 
-            <Header title="সকল শ্রেনী" />
+            <Header title="সকল অধ্যায়" />
         </div>
     );
 }

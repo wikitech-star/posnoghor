@@ -81,7 +81,7 @@ export default function Subject({ data, filters, class_data }) {
 
     return (
         <div className="bg-white p-6 rounded-box space-y-6">
-            <div className="flex-between gap-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-4">
                 <div>
                     <h4 className="text-lg font-medium">সকল বিষয়</h4>
                     <p className="text-sm text-gray-500">
@@ -188,14 +188,14 @@ export default function Subject({ data, filters, class_data }) {
                 <form onSubmit={submitSubjectForm}>
                     <div className="space-y-4">
                         <Select
-                            label="বিষয়ের নাম*"
+                            label="শ্রেণী*"
                             name="class_name"
                             options={class_data}
                             value={subjectform.data.class_id}
                             onChange={(e) =>
                                 subjectform.setData("class_id", e.target.value)
                             }
-                            error={subjectform.errors.name}
+                            error={subjectform.errors.class_id}
                         />
 
                         <Input

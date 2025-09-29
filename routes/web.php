@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\School\GroupClassController;
+use App\Http\Controllers\Backend\School\LassionController;
 use App\Http\Controllers\Backend\School\SubjectsController;
 use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,14 @@ Route::middleware(['auth', 'hasNoRole'])->prefix('app')->group(function () {
         Route::post('/subjects', 'store')->name('ux.subjects.store');
         Route::get('/subjects/{id}', 'show')->name('ux.subjects.show');
         Route::get('/subjects/del/{id}', 'destroy')->name('ux.subjects.del');
+    });
+
+    // lassion routes
+    Route::controller(LassionController::class)->group(function () {
+        Route::get('/lassion', 'index')->name('ux.lassion');
+        Route::post('/lassion', 'store')->name('ux.lassion.store');
+        Route::get('/lassion/{id}', 'show')->name('ux.lassion.show');
+        Route::get('/lassion/del/{id}', 'destroy')->name('ux.lassion.del');
     });
 
     // single routes

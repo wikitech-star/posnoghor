@@ -14,7 +14,7 @@ class GroupClass extends Model
     // filter scope
     public function scopeFilter($query, $filters)
     {
-        if (isset($filters['search']) && $filters['search']) {
+        if (isset($filters['search']) && is_string($filters['search']) && $filters['search']) {
             $query->where('name', 'like', '%' . $filters['search'] . '%');
         }
     }
