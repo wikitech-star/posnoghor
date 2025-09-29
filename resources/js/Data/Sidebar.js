@@ -1,4 +1,4 @@
-import { Book, BookOpenText, FileQuestionMark, Home, University } from "lucide-react";
+import { Book, BookOpenText, FileQuestionMark, Home, Settings, University } from "lucide-react";
 
 const ADMIN_SIDEBAR = [
     {
@@ -38,6 +38,16 @@ const ADMIN_SIDEBAR = [
         icon: FileQuestionMark,
         link: route("ux.question.type"),
         active: ["ux.question.type"],
+    },
+    {
+        title: "সেটিংস",
+        isTitle: true,
+    },
+    {
+        name: "সাইট সেটিংস",
+        icon: Settings,
+        link: route("ux.site.setting"),
+        active: ["ux.site.setting"],
     },
 ];
 

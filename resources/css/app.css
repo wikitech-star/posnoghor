@@ -58,6 +58,7 @@
 @layer utilities {
     .input,
     .select,
+    .file-input,
     .textarea {
         @apply outline-0 focus:outline-0 focus:border-primary duration-300 w-full;
     }

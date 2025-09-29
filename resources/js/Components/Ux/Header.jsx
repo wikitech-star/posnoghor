@@ -5,7 +5,7 @@ import { Link, router } from "@inertiajs/react";
 
 export default function Header({ sidebarOpen, setSidebarOpen }) {
     return (
-        <div className="bg-white h-[70px] flex-between px-5 shadow w-full">
+        <div className="bg-white min-h-[70px] flex-between px-5 shadow w-full sticky top-0 z-50">
             <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="btn btn-sm btn-circle btn-primary"

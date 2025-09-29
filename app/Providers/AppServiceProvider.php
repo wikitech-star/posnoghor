@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+        // app name
+        $siteSetting = SiteSetting::first();
+        if ($siteSetting && $siteSetting->site_name) {
+            Config::set('app.name', $siteSetting->site_name);
+        }
     }
 }

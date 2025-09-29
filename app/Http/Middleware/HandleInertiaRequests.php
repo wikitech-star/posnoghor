@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn() => $request->session()->get('success')
             ],
             'currentRoute' => Route::currentRouteName(),
+            'siteSettings' => SiteSetting::first(),
         ]);
     }
 }

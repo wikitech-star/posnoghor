@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
 use App\Http\Controllers\Backend\School\QuestionTypeController;
 use App\Http\Controllers\Backend\School\SubjectsController;
+use App\Http\Controllers\Backend\Setting\SiteSettingController;
 use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +74,14 @@ Route::middleware(['auth', 'hasNoRole'])->prefix('app')->group(function () {
         Route::post('/question-type', 'store')->name('ux.question.type.store');
         Route::get('/question-type/{id}', 'show')->name('ux.question.type.show');
         Route::get('/question-type/del/{id}', 'destroy')->name('ux.question.type.del');
+    });
+
+    // setting routes
+    // site setting
+    Route::controller(SiteSettingController::class)->prefix('/setting')->group(function () {
+        Route::get('/site-setting', 'index')->name('ux.site.setting');
+        Route::get('/site-setting-maintenance', 'updateMaintenance')->name('ux.site.setting.maintenance');
+        Route::post('/site-setting', 'update')->name('ux.site.setting.post');
     });
 
     // single routes
