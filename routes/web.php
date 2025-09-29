@@ -24,6 +24,10 @@ Route::middleware('guest')->controller(AuthController::class)->prefix('auth')->g
     Route::post('/singup', 'singup_update')->name('singup.post');
     Route::post('/forgate', 'forgate_update')->name('forgate.post');
     Route::post('/reset-password', 'update_resetpassword')->name('resetpassword.post');
+
+    // google auth
+    Route::get('/google/redirect', 'google_redirect')->name('google.redirect');
+    Route::get('/google/callback', 'google_callback');
 });
 
 // auth routes for role selection

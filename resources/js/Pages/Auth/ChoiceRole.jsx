@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import BlankLayout from "../../Components/Layouts/BlankLayout";
 import { UserCog, UserRoundPen } from "lucide-react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import CustomeSelect from "../../Components/Parts/CustomeSelect";
+import Input from "../../Components/Parts/Input";
 import toast from "react-hot-toast";
 
 function ChoiceRole({ class_data }) {
+    const { auth } = usePage().props;
+
     const [Role, setRole] = useState("");
     const [groupCLassId, setGroupCLassId] = useState("");
+    const [newPassword, setNewPassword] = useState("");
 
     // class options
     const options = Object.entries(class_data).map(([value, label]) => ({
@@ -17,11 +21,23 @@ function ChoiceRole({ class_data }) {
 
     // update role function
     const updateRole = () => {
-        if (Role === "student" && !groupCLassId) {
-            toast.error("শ্রেনী বাছায় করুন");
-            return;
-        }
-        router.post(route("role.select.post"), { role: Role });
+        router.post(
+            route("role.select.post"),
+            {
+                role: Role,
+                class: groupCLassId,
+                password: newPassword,
+            },
+            {
+                onError: (errors) => {
+                    console.log(errors);
+
+                    if (errors.groupCLassId) {
+                        toast.error(errors.groupCLassId);
+                    }
+                },
+            }
+        );
     };
     return (
         <div className="bg-white rounded-box p-8 md:w-full lg:w-md shadow">
@@ -68,6 +84,18 @@ function ChoiceRole({ class_data }) {
                         options={options}
                     />
                 </fieldset>
+            )}
+
+            {auth.google_id && (
+                <div className="mt-4">
+                    <Input
+                        label="পাসওয়ার্ড*"
+                        type="password"
+                        placeholder="পাসওয়ার্ড দিন"
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        value={newPassword}
+                    />
+                </div>
             )}
 
             <button

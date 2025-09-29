@@ -42,6 +42,11 @@ return new class extends Migration
             $table->boolean('email_verified')->default(false);
             $table->boolean('phone_verified')->default(false);
 
+            // social login details
+            $table->text('google_id')->nullable();
+            $table->text('google_token')->nullable();
+            $table->text('google_refresh_token')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });

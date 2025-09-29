@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -95,15 +96,38 @@ class AuthController extends Controller
     public function choice_role_update(Request $request)
     {
         $request->validate([
-            'role' => 'required|in:teacher,student'
+            'role' => 'required|in:teacher,student',
+            'class' => 'nullable|exists:group_classes,id',
+            'password' => 'nullable|min:8',
         ], [
             'role.required' => 'একাউন্ট এর ধরন নির্বাচন করুন।',
             'role.in' => 'একাউন্ট এর ধরন সঠিক নয়।',
+            'class.required_if' => 'শ্রেনী নির্বাচন করুন।',
+            'class.exists' => 'শ্রেনী সঠিক নয়।',
+            'password.required_if' => 'পাসওয়ার্ড প্রদান করুন।',
+            'password.min' => "পাসওয়ার্ড সর্বনিম্ন ৮ সংখ্যার হতে পারবে।"
         ]);
 
         try {
+
+            // check if google id and password not set
+            if (Auth::user()->google_id && !$request->password) {
+                return redirect()->back()->with('error', 'পাসওয়ার্ড প্রদান করুন।');
+            }
+
+            // if student role and class not set
+            if ($request->role == 'student' && !$request->groupCLassId) {
+                return redirect()->back()->with('error', 'শ্রেনী নির্বাচন করুন।');
+            }
+
             $user = Auth::user();
             $user->role = $request->role;
+            if ($request->role == 'student') {
+                $user->group_class_id = $request->groupCLassId;
+            }
+            if ($request->password) {
+                $user->password = bcrypt($request->password);
+            }
             $user->save();
 
             return redirect()->route('ux.dashboard')->with('success', 'একাউন্ট এর ধরন সফলভাবে সংরক্ষিত হয়েছে।');
@@ -218,6 +242,35 @@ class AuthController extends Controller
             }
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
+        }
+    }
+
+
+    // google loagin =================
+    public function google_redirect()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function google_callback()
+    {
+        try {
+            $google_user = Socialite::driver('google')->user();
+            $user = User::updateOrCreate([
+                'google_id' => $google_user->id,
+            ], [
+                'name' => $google_user->name,
+                'email' => $google_user->email,
+                'google_token' => $google_user->token,
+                'google_refresh_token' => $google_user->refreshToken,
+                'password' => 'qwertyui'
+            ]);
+            
+            Auth::login($user);
+
+            return redirect()->intended(route('ux.dashboard'));
+        } catch (\Exception $th) {
+            return redirect()->route('login')->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }
     }
 

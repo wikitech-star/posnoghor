@@ -13,6 +13,18 @@ function Login() {
                 আপনার তথ্য দিয়ে একাউন্ট লগইন করুন।
             </p>
 
+            <a
+                href={route("google.redirect")}
+                className="btn bg-white text-black border-[#e5e5e5] w-full mt-5"
+            >
+                <img
+                    src="/static/google_logo.svg"
+                    alt="Google logo"
+                    className="inline-block mr-2"
+                />
+                গুগল দিয়ে লগইন করুন
+            </a>
+
             <Form
                 method="post"
                 action={route("login.post")}
@@ -37,7 +49,7 @@ function Login() {
                                 error={errors.password}
                             />
                             <Link
-                                href={route('forgate')}
+                                href={route("forgate")}
                                 className="absolute bottom- right-0 text-sm text-gray-500 hover:text-neutral duration-300 hover:underline"
                             >
                                 পাসওয়ার্ড ভুলে গেছেন?
