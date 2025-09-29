@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
+use App\Http\Controllers\Backend\School\QuestionTypeController;
 use App\Http\Controllers\Backend\School\SubjectsController;
 use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,15 @@ Route::middleware(['auth', 'hasNoRole'])->prefix('app')->group(function () {
         Route::post('/lassion', 'store')->name('ux.lassion.store');
         Route::get('/lassion/{id}', 'show')->name('ux.lassion.show');
         Route::get('/lassion/del/{id}', 'destroy')->name('ux.lassion.del');
+    });
+
+
+    // question type routes
+    Route::controller(QuestionTypeController::class)->group(function () {
+        Route::get('/question-type', 'index')->name('ux.question.type');
+        Route::post('/question-type', 'store')->name('ux.question.type.store');
+        Route::get('/question-type/{id}', 'show')->name('ux.question.type.show');
+        Route::get('/question-type/del/{id}', 'destroy')->name('ux.question.type.del');
     });
 
     // single routes

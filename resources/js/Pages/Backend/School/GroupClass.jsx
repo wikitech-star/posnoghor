@@ -142,7 +142,7 @@ export default function GroupClass({ data, filters }) {
                                                 onClick={() =>
                                                     getEditData(item.id)
                                                 }
-                                                className="btn btn-xs btn-info"
+                                                className="btn btn-xs btn-info btn-circle"
                                             >
                                                 <Pen size={12} />
                                             </button>
@@ -158,7 +158,7 @@ export default function GroupClass({ data, filters }) {
                                                         )
                                                     )
                                                 }
-                                                className="btn btn-xs btn-error"
+                                                className="btn btn-xs btn-error btn-circle"
                                             >
                                                 <Trash size={12} />
                                             </button>

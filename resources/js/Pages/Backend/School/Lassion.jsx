@@ -114,7 +114,7 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                         className="btn btn-primary btn-sm"
                     >
                         <Plus size={13} />
-                        নতুন শ্রেনী
+                        নতুন অধ্যায়
                     </button>
                 </div>
             </div>
@@ -163,7 +163,7 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                                                 onClick={() =>
                                                     getEditData(item.id)
                                                 }
-                                                className="btn btn-xs btn-info"
+                                                className="btn btn-xs btn-info btn-circle"
                                             >
                                                 <Pen size={12} />
                                             </button>
@@ -179,7 +179,7 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                                                         )
                                                     )
                                                 }
-                                                className="btn btn-xs btn-error"
+                                                className="btn btn-xs btn-error btn-circle"
                                             >
                                                 <Trash size={12} />
                                             </button>
