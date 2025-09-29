@@ -5,6 +5,7 @@ use App\Http\Middleware\Guest;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HasNoRole;
 use App\Http\Middleware\HasRole;
+use App\Http\Middleware\IsMaintance;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => Auth::class,
             'hasRole' => HasRole::class,
             'hasNoRole' => HasNoRole::class,
+            'isMaintance' => IsMaintance::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

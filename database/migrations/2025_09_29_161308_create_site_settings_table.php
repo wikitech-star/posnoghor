@@ -27,7 +27,6 @@ return new class extends Migration
             $table->longText('google_map')->nullable();
 
             $table->string('maintenance_mode')->default('off');
-            $table->longText('maintenance_message')->nullable();
             $table->timestamps();
         });
     }

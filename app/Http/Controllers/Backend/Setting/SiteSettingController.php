@@ -19,13 +19,12 @@ class SiteSettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'site_name' => 'required|string|max:255',
+            'site_name' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:500',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,ico|max:1024',
         ], [
-            'site_name.required' => 'সাইট নাম অবশ্যই দিতে হবে',
             'site_name.string' => 'সাইট নাম অবশ্যই স্ট্রিং হতে হবে',
             'site_name.max' => 'সাইট নাম সর্বোচ্চ ২৫৫ অক্ষর হতে পারে',
             'meta_description.string' => 'মেটা বর্ণনা অবশ্যই স্ট্রিং হতে হবে',
@@ -33,15 +32,16 @@ class SiteSettingController extends Controller
             'meta_keywords.string' => 'মেটা কীওয়ার্ড অবশ্যই স্ট্রিং হতে হবে',
             'meta_keywords.max' => 'মেটা কীওয়ার্ড সর্বোচ্চ ৫০০ অক্ষর হতে পারে',
             'logo.image' => 'লোগো অবশ্যই একটি ছবি হতে হবে',
-            'logo.mimes' => 'লোগো ফাইলের ধরন হতে হবে: jpeg, png, jpg, gif, svg',
+            'logo.mimes' => 'লোগো ফাইলের ধরন হতে হবে: jpeg, png, jpg',
             'logo.max' => 'লোগো সর্বোচ্চ ২ মেগাবাইট হতে পারে',
             'favicon.image' => 'ফেভিকন অবশ্যই একটি ছবি হতে হবে',
-            'favicon.mimes' => 'ফেভিকন ফাইলের ধরন হতে হবে: jpeg, png, jpg, gif, svg, ico',
+            'favicon.mimes' => 'ফেভিকন ফাইলের ধরন হতে হবে: jpeg, png, jpg, ico',
             'favicon.max' => 'ফেভিকন সর্বোচ্চ ১ মেগাবাইট হতে পারে',
         ]);
 
         try {
             $setting = SiteSetting::first();
+
             if ($request->hasFile('logo')) {
                 $logo = $request->file('logo');
                 $logoName = 'logo_' . time() . '.' . $logo->getClientOriginalExtension();
