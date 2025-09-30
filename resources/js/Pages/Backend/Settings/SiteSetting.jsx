@@ -2,6 +2,7 @@ import Input from "../../../Components/Parts/Input";
 import Textarea from "../../../Components/Parts/Textarea";
 import FileInput from "../../../Components/Parts/FileInput";
 import { router, useForm, usePage } from "@inertiajs/react";
+import Header from "../../../Components/Parts/Header";
 
 export default function SiteSetting() {
     const { siteSettings } = usePage().props;
@@ -147,6 +148,8 @@ export default function SiteSetting() {
                     />
                 </div>
             </div>
+
+            <Header title="সাইট সেটিংস" />
         </>
     );
 }

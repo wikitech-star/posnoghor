@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
 use App\Http\Controllers\Backend\School\QuestionTypeController;
 use App\Http\Controllers\Backend\School\SubjectsController;
+use App\Http\Controllers\Backend\Setting\MailSettingController;
 use App\Http\Controllers\Backend\Setting\SiteSettingController;
 use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +84,11 @@ Route::middleware(['isMaintance'])->group(function () {
             Route::get('/site-setting', 'index')->name('ux.site.setting');
             Route::get('/site-setting-maintenance', 'updateMaintenance')->name('ux.site.setting.maintenance');
             Route::post('/site-setting', 'update')->name('ux.site.setting.post');
+        });
+        // mail setting
+        Route::controller(MailSettingController::class)->prefix('/setting')->group(function () {
+            Route::get('/mail-setting', 'index')->name('ux.mail.setting');
+            Route::post('/mail-setting', 'update')->name('ux.mail.setting.post');
         });
 
         // single routes

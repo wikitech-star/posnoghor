@@ -40,7 +40,7 @@ class SiteSettingController extends Controller
         ]);
 
         try {
-            $setting = SiteSetting::first();
+            $setting = SiteSetting::firstOrNew();
 
             if ($request->hasFile('logo')) {
                 $logo = $request->file('logo');

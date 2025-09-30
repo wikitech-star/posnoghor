@@ -6,11 +6,14 @@ export default function Input({
     name,
     placeholder = "",
     error,
+    className = "",
     ...props
 }) {
     return (
-        <fieldset className="fieldset">
-            {label && <legend className="fieldset-legend p-0 pb-0.5">{label}</legend>}
+        <fieldset className={`fieldset ${className}`}>
+            {label && (
+                <legend className="fieldset-legend p-0 pb-0.5">{label}</legend>
+            )}
             <input
                 type={type}
                 placeholder={placeholder}

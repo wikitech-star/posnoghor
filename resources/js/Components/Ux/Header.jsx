@@ -45,7 +45,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
                             <button
                                 onClick={() =>
                                     confirm("আপনি নিশ্চিত?") &&
-                                    router.get("logout")
+                                    router.get(route('logout'))
                                 }
                                 as="button"
                             >

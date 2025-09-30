@@ -1,4 +1,4 @@
-import { Book, BookOpenText, FileQuestionMark, Home, Settings, University } from "lucide-react";
+import { Book, BookOpenText, FileQuestionMark, Home, MailWarning, Settings, University } from "lucide-react";
 
 const ADMIN_SIDEBAR = [
     {
@@ -48,6 +48,12 @@ const ADMIN_SIDEBAR = [
         icon: Settings,
         link: route("ux.site.setting"),
         active: ["ux.site.setting"],
+    },
+    {
+        name: "ইমেইল সেটিংস",
+        icon: MailWarning,
+        link: route("ux.mail.setting"),
+        active: ["ux.mail.setting"],
     },
 ];
 
