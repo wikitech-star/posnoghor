@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\GlobalMialer;
+use App\Models\GoogleAuth;
 use App\Models\GroupClass;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,7 +19,9 @@ class AuthController extends Controller
     // login ===============
     public function login()
     {
-        return Inertia::render("Auth/Login");
+        return Inertia::render("Auth/Login", [
+            'google_auth_status' => GoogleAuth::first()->value('status')
+        ]);
     }
 
     public function login_store(Request $request)
@@ -49,7 +52,9 @@ class AuthController extends Controller
     // sing up ================
     public function singup()
     {
-        return Inertia::render("Auth/Signup");
+        return Inertia::render("Auth/Signup", [
+            'google_auth_status' => GoogleAuth::first()->value('status')
+        ]);
     }
     public function singup_update(Request $request)
     {
@@ -265,7 +270,7 @@ class AuthController extends Controller
                 'google_refresh_token' => $google_user->refreshToken,
                 'password' => 'qwertyui'
             ]);
-            
+
             Auth::login($user);
 
             return redirect()->intended(route('ux.dashboard'));

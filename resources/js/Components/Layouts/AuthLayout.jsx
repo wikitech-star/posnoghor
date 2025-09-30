@@ -14,7 +14,7 @@ export default function AuthLayout({ title, children }) {
     return (
         <Global title={title}>
             <div className="flex h-screen overflow-hidden">
-                <Sidebar sidebarOpen={sidebarOpen} />
+                <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
                 <div className="flex flex-col flex-1 bg-gray-100 w-full h-screen overflow-auto">
                     <Header
                         sidebarOpen={sidebarOpen}

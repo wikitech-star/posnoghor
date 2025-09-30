@@ -9,12 +9,12 @@ export default function Menu({ sideMenuOpen }) {
 
     return (
         <div
-            className={`fixed lg:static bg-white shadow-sm lg:bg-transparent lg:shadow-none top-0 w-[80%] md:w-[300px] lg:w-auto h-screen lg:h-auto overflow-y-auto lg:overflow-hidden duration-300 ${
+            className={`fixed lg:static bg-neutral shadow-sm lg:bg-transparent lg:shadow-none top-0 w-[80%] md:w-[300px] lg:w-auto h-screen lg:h-auto overflow-y-auto lg:overflow-hidden duration-300 ${
                 sideMenuOpen ? "left-0" : "-left-full"
             }`}
         >
             {/* header */}
-            <div className="flex-between lg:hidden px-5 py-4 border-b border-gray-100 sticky top-0 bg-white">
+            <div className="flex-between lg:hidden px-5 py-4 border-b border-white/30 sticky top-0 bg-neutral">
                 <Logo />
             </div>
 
@@ -32,8 +32,8 @@ export default function Menu({ sideMenuOpen }) {
                         <Link
                             key={i}
                             href={menu.url}
-                            className={`duration-300 hover:text-neutral text-base font-medium ${
-                                isActive ? "text-secondary" : "text-neutral"
+                            className={`duration-300 hover:text-primary text-base font-medium ${
+                                isActive ? "text-secondary" : "text-white"
                             }`}
                         >
                             {menu.name}

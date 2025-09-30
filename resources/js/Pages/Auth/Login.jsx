@@ -3,7 +3,7 @@ import BlankLayout from "../../Components/Layouts/BlankLayout";
 import Input from "../../Components/Parts/Input";
 import { Form, Link } from "@inertiajs/react";
 
-function Login() {
+function Login({ google_auth_status }) {
     return (
         <div className="bg-white rounded-box p-8 md:w-full lg:w-md shadow">
             <h1 className="text-center text-xl text-neutral font-bold">
@@ -13,17 +13,19 @@ function Login() {
                 আপনার তথ্য দিয়ে একাউন্ট লগইন করুন।
             </p>
 
-            <a
-                href={route("google.redirect")}
-                className="btn bg-white text-black border-[#e5e5e5] w-full mt-5"
-            >
-                <img
-                    src="/static/google_logo.svg"
-                    alt="Google logo"
-                    className="inline-block mr-2"
-                />
-                গুগল দিয়ে লগইন করুন
-            </a>
+            {google_auth_status == "active" && (
+                <a
+                    href={route("google.redirect")}
+                    className="btn bg-white text-black border-[#e5e5e5] w-full mt-5"
+                >
+                    <img
+                        src="/static/google_logo.svg"
+                        alt="Google logo"
+                        className="inline-block mr-2"
+                    />
+                    গুগল দিয়ে লগইন করুন
+                </a>
+            )}
 
             <Form
                 method="post"
