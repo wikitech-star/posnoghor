@@ -16,11 +16,13 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
+
     // login ===============
     public function login()
     {
+        $googleAuth = GoogleAuth::first();
         return Inertia::render("Auth/Login", [
-            'google_auth_status' => GoogleAuth::first()->value('status')
+            'google_auth_status' => $googleAuth
         ]);
     }
 
@@ -52,8 +54,9 @@ class AuthController extends Controller
     // sing up ================
     public function singup()
     {
+        $googleAuth = GoogleAuth::first();
         return Inertia::render("Auth/Signup", [
-            'google_auth_status' => GoogleAuth::first()->value('status')
+            'google_auth_status' => $googleAuth
         ]);
     }
     public function singup_update(Request $request)

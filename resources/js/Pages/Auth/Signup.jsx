@@ -13,19 +13,21 @@ function Signup({ google_auth_status }) {
                 আপনার তথ্য দিয়ে নতুন একাউন্ট তৈরি করুন।
             </p>
 
-            {google_auth_status == "active" && (
-                <a
-                    href={route("google.redirect")}
-                    className="btn bg-white text-black border-[#e5e5e5] w-full mt-5"
-                >
-                    <img
-                        src="/static/google_logo.svg"
-                        alt="Google logo"
-                        className="inline-block mr-2"
-                    />
-                    গুগল দিয়ে লগইন করুন
-                </a>
-            )}
+            {google_auth_status?.status == "active" &&
+                google_auth_status?.client_id &&
+                google_auth_status?.client_secrate && (
+                    <a
+                        href={route("google.redirect")}
+                        className="btn bg-white text-black border-[#e5e5e5] w-full mt-5"
+                    >
+                        <img
+                            src="/static/google_logo.svg"
+                            alt="Google logo"
+                            className="inline-block mr-2"
+                        />
+                        গুগল দিয়ে লগইন করুন
+                    </a>
+                )}
 
             <Form
                 method="post"

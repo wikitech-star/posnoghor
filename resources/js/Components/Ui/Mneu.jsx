@@ -32,8 +32,8 @@ export default function Menu({ sideMenuOpen }) {
                         <Link
                             key={i}
                             href={menu.url}
-                            className={`duration-300 hover:text-primary text-base font-medium ${
-                                isActive ? "text-secondary" : "text-white"
+                            className={`duration-300 hover:text-primary lg:hover:text-neutral text-base font-medium ${
+                                isActive ? "text-secondary" : "text-white lg:text-neutral"
                             }`}
                         >
                             {menu.name}
