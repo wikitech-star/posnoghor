@@ -1,4 +1,4 @@
-import { Book, BookOpenText, FileQuestionMark, Home, Key, MailWarning, Settings, University } from "lucide-react";
+import { BadgeQuestionMark, Book, BookOpenText, FileQuestionMark, Home, Key, MailWarning, Settings, University } from "lucide-react";
 
 const ADMIN_SIDEBAR = [
     {
@@ -36,6 +36,16 @@ const ADMIN_SIDEBAR = [
     {
         name: "প্রশ্নের ধরন",
         icon: FileQuestionMark,
+        link: route("ux.question.type"),
+        active: ["ux.question.type"],
+    },
+    {
+        title: "ব্যাংক",
+        isTitle: true,
+    },
+    {
+        name: "সকল প্রশ্ন",
+        icon: BadgeQuestionMark,
         link: route("ux.question.type"),
         active: ["ux.question.type"],
     },

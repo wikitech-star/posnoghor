@@ -7,6 +7,7 @@ import Header from "../../../Components/Parts/Header";
 import { Frown, Pen, Plus, Trash } from "lucide-react";
 import Model from "../../../Components/Parts/Model";
 import Input from "../../../Components/Parts/Input";
+import Paginations from "../../../Components/Parts/Paginations";
 import Select from "../../../Components/Parts/Select";
 import { Form, router, useForm } from "@inertiajs/react";
 import axios from "axios";
@@ -191,6 +192,9 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                     </table>
                 )}
             </div>
+
+            {/* pagination */}
+            <Paginations data={data} />
 
             {/* add or update model */}
             <Model

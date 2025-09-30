@@ -7,7 +7,8 @@ import Header from "../../../Components/Parts/Header";
 import { Frown, Pen, Plus, Trash } from "lucide-react";
 import Model from "../../../Components/Parts/Model";
 import Input from "../../../Components/Parts/Input";
-import { Form, router, useForm } from "@inertiajs/react";
+import Paginations from "../../../Components/Parts/Paginations";
+import { router, useForm } from "@inertiajs/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -170,6 +171,9 @@ export default function GroupClass({ data, filters }) {
                     </table>
                 )}
             </div>
+
+            {/* pagination */}
+            <Paginations data={data} />
 
             {/* add or update model */}
             <Model
