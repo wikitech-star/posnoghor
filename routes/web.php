@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
 use App\Http\Controllers\Backend\School\QuestionTypeController;
 use App\Http\Controllers\Backend\School\SubjectsController;
+use App\Http\Controllers\Backend\Setting\GoogleAuthController;
 use App\Http\Controllers\Backend\Setting\MailSettingController;
 use App\Http\Controllers\Backend\Setting\SiteSettingController;
 use App\Http\Controllers\Ui\HomeController;
@@ -89,6 +90,12 @@ Route::middleware(['isMaintance'])->group(function () {
         Route::controller(MailSettingController::class)->prefix('/setting')->group(function () {
             Route::get('/mail-setting', 'index')->name('ux.mail.setting');
             Route::post('/mail-setting', 'update')->name('ux.mail.setting.post');
+        });
+        // google auth setting
+        Route::controller(GoogleAuthController::class)->prefix('/setting')->group(function(){
+             Route::get('/goole-auth-setting', 'index')->name('ux.goolge.auth.setting');
+             Route::get('/goole-auth-setting-status', 'updateStatus')->name('ux.goolge.auth.setting.status');
+            Route::post('/goole-auth-setting', 'update')->name('ux.goolge.auth.setting.post');
         });
 
         // single routes
