@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
             $table->string('option_text');
+            $table->enum('type', ['normal', 'hard'])->default('normal');
             $table->boolean('is_correct')->default(false);
             $table->timestamps();
         });

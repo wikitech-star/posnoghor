@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\Question\QuestionController;
 use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
 use App\Http\Controllers\Backend\School\QuestionTypeController;
@@ -70,13 +71,17 @@ Route::middleware(['isMaintance'])->group(function () {
             Route::get('/lassion/del/{id}', 'destroy')->name('ux.lassion.del');
         });
 
-
         // question type routes
         Route::controller(QuestionTypeController::class)->group(function () {
             Route::get('/question-type', 'index')->name('ux.question.type');
             Route::post('/question-type', 'store')->name('ux.question.type.store');
             Route::get('/question-type/{id}', 'show')->name('ux.question.type.show');
             Route::get('/question-type/del/{id}', 'destroy')->name('ux.question.type.del');
+        });
+
+        // questions
+        Route::controller(QuestionController::class)->prefix('/question')->group(function(){
+            Route::get('/add', 'add_view')->name('ux.question.add');
         });
 
         // setting routes

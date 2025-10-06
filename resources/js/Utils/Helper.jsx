@@ -44,4 +44,51 @@ function ENGLISH_DATE_TO_BANGLA(dateString) {
         );
 }
 
-export { ENGLISH_TO_BANGLA, ENGLISH_DATE_TO_BANGLA };
+function BANGLA_INDEX(index) {
+    const banglaLetters = [
+        "ক",
+        "খ",
+        "গ",
+        "ঘ",
+        "ঙ",
+        "চ",
+        "ছ",
+        "জ",
+        "ঝ",
+        "ঞ",
+        "ট",
+        "ঠ",
+        "ড",
+        "ঢ",
+        "ণ",
+        "ত",
+        "থ",
+        "দ",
+        "ধ",
+        "ন",
+        "প",
+        "ফ",
+        "ব",
+        "ভ",
+        "ম",
+        "য",
+        "র",
+        "ল",
+        "শ",
+        "ষ",
+        "স",
+        "হ",
+    ];
+
+    const totalLetters = banglaLetters.length;
+
+    if (index < totalLetters) {
+        return banglaLetters[index];
+    } else {
+        const quotient = Math.floor(index / totalLetters); // 1,2,3...
+        const remainder = index % totalLetters;
+        return `${quotient}${banglaLetters[remainder]}`;
+    }
+}
+
+export { ENGLISH_TO_BANGLA, ENGLISH_DATE_TO_BANGLA, BANGLA_INDEX };

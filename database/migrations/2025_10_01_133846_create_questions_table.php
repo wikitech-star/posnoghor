@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->foreignId('q_type_id')->nullable()->constrained('question_types')->nullOnDelete();
 
             $table->enum('type', ['mcq', 'cq', 'sq']);
+            $table->enum('mcq_type', ['normal', 'hard']);
 
             $table->string('title')->nullable();
             $table->longText('body')->nullable();

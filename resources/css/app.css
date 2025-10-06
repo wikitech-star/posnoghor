@@ -1,5 +1,5 @@
 /* fonts */
-@import url("https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&family=Noto+Sans+Bengali:wght@100..900&family=Noto+Serif+Bengali:wght@100..900&family=Tiro+Bangla:ital@0;1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&family=Noto+Sans+Bengali:wght@100..900&family=Noto+Serif+Bengali:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Tiro+Bangla:ital@0;1&display=swap");
 
 @import "tailwindcss";
 
@@ -53,6 +53,8 @@
     --font-noto_sans: "Noto Sans Bengali", sans-serif;
     --font-baloo: "Baloo Da 2", sans-serif;
     --font-tiro: "Tiro Bangla", serif;
+    --font-roboto: "Roboto", sans-serif;
+    --font-base: "Roboto", "Noto Serif Bengali", sans-serif;
 }
 
 @layer utilities {
@@ -91,6 +93,9 @@
 
 @layer base {
     body {
-        @apply font-noto_serif selection:bg-primary selection:text-white w-full;
+        @apply font-base selection:bg-primary selection:text-white w-full;
+    }
+    .katex {
+        @apply font-sans;
     }
 }

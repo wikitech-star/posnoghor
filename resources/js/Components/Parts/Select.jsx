@@ -1,6 +1,13 @@
 import React from "react";
 
-export default function Select({ options = {}, label, name, error, ...props }) {
+export default function Select({
+    options = {},
+    label,
+    name,
+    error,
+    oldVal = null,
+    ...props
+}) {
     // যদি object দেওয়া হয় → array বানাই
     const normalizedOptions = Array.isArray(options)
         ? options
@@ -17,7 +24,11 @@ export default function Select({ options = {}, label, name, error, ...props }) {
             <select name={name} className="select" {...props}>
                 <option value="">--সকল--</option>
                 {normalizedOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option
+                        selected={oldVal == option.value}
+                        key={option.value}
+                        value={option.value}
+                    >
                         {option.label}
                     </option>
                 ))}

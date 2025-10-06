@@ -52,8 +52,8 @@ const ADMIN_SIDEBAR = [
     {
         name: "নতুন প্রশ্ন",
         icon: BadgePlus,
-        link: route("ux.question.type"),
-        active: ["ux.question.type"],
+        link: route("ux.question.add"),
+        active: ["ux.question.add"],
     },
     {
         title: "সেটিংস",
