@@ -9,14 +9,20 @@ import Input from "../../../Components/Parts/Input";
 import DynamicMathEditor from "../../../Components/Parts/DynamicMathEditor";
 import DynamicMathEditorBoth from "../../../Components/Parts/DynamicMathEditorBoth";
 import { BANGLA_INDEX } from "../../../Utils/Helper";
-import { BrushCleaning, RefreshCcw } from "lucide-react";
+import {
+    BrushCleaning,
+    Check,
+    CornerUpLeftIcon,
+    RefreshCcw,
+} from "lucide-react";
 
 export default function Add({ class_data, subject, lassion, question_type }) {
-    const [schoolCollaps, setSchoolCollaps] = useState(false);
-    const [mediaCollaps, setMediaCollaps] = useState(false);
-    const [uddipokCollaps, setUddipokCollaps] = useState(false);
+    const [schoolCollaps, setSchoolCollaps] = useState(true);
+    const [mediaCollaps, setMediaCollaps] = useState(true);
+    const [uddipokCollaps, setUddipokCollaps] = useState(true);
     const [cqsqCollaps, setCqSqCollaps] = useState(true);
-    const [cqsqCollAnsaps, setCqSqAnsCollaps] = useState(false);
+    const [mcqCollAnsaps, setMcqAnsCollaps] = useState(true);
+    const [mcqHCollAnsaps, setMcqHAnsCollaps] = useState(true);
 
     const qFrom = useForm({
         // required data
@@ -38,14 +44,18 @@ export default function Add({ class_data, subject, lassion, question_type }) {
 
         // cq sq
         cqsqQuestion: [],
+
+        // mcq
+        mcqQuestion: [],
+        mcqQuestionhard: [],
     });
 
     // reset
     useEffect(() => {
-        if (qFrom.data.question_type == "mcq") {
+        if (qFrom.data.question_type === "mcq") {
             qFrom.reset("cqsqQuestion");
         }
-    }, [qFrom.data]);
+    }, [qFrom.data.question_type]);
 
     // search
     useEffect(() => {
@@ -71,7 +81,7 @@ export default function Add({ class_data, subject, lassion, question_type }) {
     return (
         <div className="bg-white p-6 rounded-box space-y-6">
             {/* page title */}
-            <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-5">
                 <div>
                     <h4 className="text-lg font-medium">নতুন প্রশ্ন তৈরী</h4>
                     <p className="text-sm text-gray-500">
@@ -81,10 +91,21 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className="flex flex-col lg:flex-row justify-between gap-3">
                 {/* form */}
-                <div className="space-y-3 col-span-2">
-                    <button className="btn btn-xs btn-error float-end">
+                <div className="space-y-3 w-full lg:w-[60%]">
+                    <button
+                        onClick={() => {
+                            if (confirm("আপনি কি নিশ্চিত?")) {
+                                qFrom.reset();
+                                router.visit(route("ux.question.add"),{
+                                    preserveScroll: true,
+                                    preserveState:  true
+                                });
+                            }
+                        }}
+                        className="btn btn-xs btn-error float-end"
+                    >
                         <RefreshCcw size={14} /> সব পরিষ্কার করুন
                     </button>
 
@@ -292,16 +313,89 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                                 <DynamicMathEditorBoth
                                     qFrom={qFrom}
                                     name="cqsqQuestion"
-                                    defaultCount={0}
+                                    defaultCount={1}
                                     defaultValues={qFrom.data.cqsqQuestion}
                                 />
                             </div>
                         </div>
                     )}
+
+                    {/* mcq */}
+                    {qFrom.data.question_type === "mcq" &&
+                        (qFrom.data.question_label === "normal" ||
+                            qFrom.data.question_label === "hard") && (
+                            <div
+                                tabIndex={0}
+                                className={`collapse ${
+                                    mcqCollAnsaps
+                                        ? "collapse-open"
+                                        : "collapse-close"
+                                } collapse-plus bg-base-100 border-base-300 border`}
+                            >
+                                <div
+                                    className="collapse-title font-semibold text-sm bg-primary text-neutral uppercase"
+                                    onClick={() =>
+                                        setMcqAnsCollaps(!mcqCollAnsaps)
+                                    }
+                                >
+                                    {qFrom.data.question_type} প্রশ্ন সাধারন*
+                                </div>
+                                <div
+                                    className={`collapse-content space-y-4 ${
+                                        mcqCollAnsaps && "pt-3"
+                                    }`}
+                                >
+                                    <DynamicMathEditor
+                                        qFrom={qFrom}
+                                        name="mcqQuestion"
+                                        defaultCount={1}
+                                        type="normal"
+                                        defaultValues={qFrom.data.mcqQuestion}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                    {qFrom.data.question_type === "mcq" &&
+                        qFrom.data.question_label === "hard" && (
+                            <div
+                                tabIndex={0}
+                                className={`collapse ${
+                                    mcqHCollAnsaps
+                                        ? "collapse-open"
+                                        : "collapse-close"
+                                } collapse-plus bg-base-100 border-base-300 border`}
+                            >
+                                <div
+                                    className="collapse-title font-semibold text-sm bg-primary text-neutral uppercase"
+                                    onClick={() =>
+                                        setMcqHAnsCollaps(!mcqHCollAnsaps)
+                                    }
+                                >
+                                    {qFrom.data.question_type} প্রশ্ন উচ্চতার
+                                    দক্ষতা*
+                                </div>
+                                <div
+                                    className={`collapse-content space-y-4 ${
+                                        mcqHCollAnsaps && "pt-3"
+                                    }`}
+                                >
+                                    <DynamicMathEditor
+                                        qFrom={qFrom}
+                                        name="mcqQuestionhard"
+                                        defaultCount={1}
+                                        type="hard"
+                                        defaultValues={
+                                            qFrom.data.mcqQuestionhard
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        )}
                 </div>
 
                 {/* preview */}
-                <div className="border border-gray-300 rounded-box p-5 max-h-fit sticky top-25">
+                <div className="border border-gray-300 rounded-box p-5 max-h-fit sticky top-25 w-full lg:w-[40%]">
                     {(qFrom.data.searchTtitle ||
                         qFrom.data.questionTtitle ||
                         qFrom.data?.cqsqQuestion.length > 0) && (
@@ -356,11 +450,47 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                     )}
 
                     {/* mcq */}
+                    {qFrom.data.question_type === "mcq" && (
+                        <div className="mt-3 pl-4">
+                            {qFrom.data?.mcqQuestion.map((val, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-2"
+                                >
+                                    <p>{BANGLA_INDEX(i)}.</p>
+                                    <LatexPreview content={val["value"]} />
+                                    {val["isRight"] && <Check size={10} />}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {qFrom.data?.mcqQuestionhard.length > 0 &&
+                        qFrom.data.question_label === "hard" && (
+                            <h1 className="text-xs font-bold mt-3 text-neutral">
+                                নিচের কোনটি সঠিক?
+                            </h1>
+                        )}
+                    {qFrom.data.question_type === "mcq" &&
+                        qFrom.data.question_label === "hard" && (
+                            <div className="mt-3 pl-4">
+                                {qFrom.data?.mcqQuestionhard.map((val, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <p>{BANGLA_INDEX(i)}.</p>
+                                        <LatexPreview content={val["value"]} />
+                                        {val["isRight"] && <Check size={10} />}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
                     {/* emoty */}
-                    {(!qFrom.data.searchTtitle ||
-                        !qFrom.data.questionTtitle ||
-                        qFrom.data?.cqsqQuestion.length < 0) && (
+                    {(!qFrom.data.questionTtitle ||
+                        qFrom.data?.cqsqQuestion.length < 0 ||
+                        qFrom.data?.mcqQuestionhard.length < 0 ||
+                        qFrom.data?.mcqQuestion.length < 0) && (
                         <div className="flex flex-col items-center p-10">
                             <BrushCleaning
                                 size={20}
