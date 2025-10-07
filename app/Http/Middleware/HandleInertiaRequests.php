@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'currentRoute' => Route::currentRouteName(),
             'siteSettings' => SiteSetting::first(),
+            'appurl' => env('APP_URL')
         ]);
     }
 }
