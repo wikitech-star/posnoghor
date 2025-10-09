@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\School;
 
 use App\Http\Controllers\Controller;
 use App\Models\Question_type;
+use App\Models\Questions;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -70,6 +71,11 @@ class QuestionTypeController extends Controller
     public function destroy($id)
     {
         try {
+            // if any subject assigned to this class, then don't allow to delete
+            if (Questions::where('q_type_id', $id)->count() > 0) {
+                return redirect()->back()->with('error', 'এই টপিক ব্যাবহার করে প্রশ্ন তৈরি করা আছে, তাই এটি মুছে ফেলা যাবে না।');
+            }
+
             $class = Question_type::find($id);
             if (!$class) {
                 return redirect()->back()->with('error', 'প্রশ্নের ধরন পাওয়া যায়নি।');

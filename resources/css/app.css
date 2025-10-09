@@ -99,3 +99,6 @@
         @apply font-sans;
     }
 }
+.katex {
+    font-size: 13px !important;
+}

@@ -16,6 +16,107 @@ use Inertia\Inertia;
 
 class QuestionController extends Controller
 {
+    // all ====================
+    public function index(Request $request)
+    {
+        $query = $request->only('search', 'type', 'stype', 'cid', 'sid', 'lid', 'tid');
+
+        // question
+        $dataquery = Questions::query();
+        $dataquery->when($request->query('type'), function ($q, $type) {
+            $q->where('type', $type);
+        });
+        $dataquery->when($request->query('stype'), function ($q, $type) {
+            $q->where('mcq_type', $type);
+        });
+        $dataquery->when($request->query('cid'), function ($q, $type) {
+            $q->where('class_id', $type);
+        });
+        $dataquery->when($request->query('sid'), function ($q, $type) {
+            $q->where('subject_id', $type);
+        });
+        $dataquery->when($request->query('lid'), function ($q, $type) {
+            $q->where('lesson_id', $type);
+        });
+        $dataquery->when($request->query('tid'), function ($q, $type) {
+            $q->where('q_type_id', $type);
+        });
+        $data = $dataquery->with(['group_class', 'subject', 'lession', 'topics', 'createdby', 'updatedby'])
+            ->latest()
+            ->orderBy('type')
+            ->filter($request->only('search'))
+            ->paginate(10)
+            ->through(function ($q) {
+                if ($q->type === 'mcq') {
+                    $q->setRelation('options', $q->mcqOptions);
+                } elseif (in_array($q->type, ['cq', 'sq'])) {
+                    $q->setRelation('options', $q->cqsqOptions);
+                }
+                return [
+                    'id' => $q->id,
+                    'class' => $q->group_class?->name,
+                    'subject' => $q->subject?->name,
+                    'lession' => $q->lession?->name,
+                    'topics' => $q->topics?->name,
+                    'created_by' => [
+                        'name' => $q->createdby?->name,
+                        'email' => $q->createdby?->email
+                    ],
+                    'updated_by' => [
+                        'name' => $q->updatedby?->name,
+                        'email' => $q->updatedby?->email
+                    ],
+                    'question_type' => $q->type,
+                    'mcq_label' => $q?->mcq_type == 'normal' ? 'সাধারন' : 'উচ্চতার দক্ষতা',
+                    'title' => $q?->title,
+                    'body' => $q?->body,
+                    'options' => $q->options->map(function ($opt) use ($q) {
+                        if ($q->type === 'mcq') {
+                            return [
+                                'id' => $opt->id,
+                                'text' => $opt->option_text,
+                                'is_correct' => $opt->is_correct,
+                            ];
+                        }
+                        if (in_array($q->type, ['cq', 'sq'])) {
+                            return [
+                                'id' => $opt->id,
+                                'text' => $opt->questions,
+                                'ans' => $opt->ans ?? null,
+                            ];
+                        }
+                    }),
+                    'created_at' => $q->created_at->format('d M, Y'),
+                    'updated_at' => $q->updated_at->format('d M, Y'),
+                ];
+            });
+
+        // filter data
+        $subjects = Subject::when($request->query('cid'), function ($query, $classId) {
+            $query->where('class_id', $classId);
+        })
+            ->pluck('name', 'id')
+            ->toArray();
+
+        $lassions = Lassion::when($request->query('cid'), function ($query, $classId) {
+            $query->where('class_id', $classId);
+        })
+            ->when($request->query('sid'), function ($query, $sId) {
+                $query->where('subject_id', $sId);
+            })
+            ->pluck('name', 'id')
+            ->toArray();
+
+        return Inertia::render('Backend/Question/Index', [
+            'query' => $query,
+            'data' => $data,
+            'class' => GroupClass::pluck('name', 'id')->toArray(),
+            'subject' => $subjects,
+            'lassion' => $lassions,
+            'topic' => Question_type::pluck('name', 'id')->toArray(),
+        ]);
+    }
+
     // add =================
     public function add_view(Request $request)
     {
@@ -56,7 +157,7 @@ class QuestionController extends Controller
             'videoUrl' => 'nullable|url',
 
             'searchTtitle' => 'nullable',
-            'questionTtitle' => 'required'
+            'questionTtitle' => 'required_if:question_type,cq'
         ], [
             'question_type.required' => 'প্রশ্নের ধরন নির্বাচন করুন।',
             'question_label.required_if' => 'MCQ ধরন নির্বাচন করুন।',
@@ -69,7 +170,7 @@ class QuestionController extends Controller
             'image.mimes' => 'ইমেজ png,jpg,webp,gif গ্রহণযোগ।',
             'videoUrl.url' => 'সঠিক লিংক প্রদান করুন।',
 
-            'questionTtitle.required' => 'উদ্দিপক প্রদান করুন।'
+            'questionTtitle.required_if' => 'উদ্দিপক প্রদান করুন।'
         ]);
 
         try {
@@ -228,6 +329,22 @@ class QuestionController extends Controller
                 $statusMessage = ' SQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
             return redirect()->back()->with('success', $statusMessage);
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . (env('APP_ENV') == 'local' ? $th->getMessage() : ''));
+        }
+    }
+
+    // delete
+    public function distroy($id)
+    {
+        try {
+            $find = Questions::find($id);
+            if ($find && $find->image && file_exists(public_path('uploads/' . $find->image))) {
+                unlink(public_path('uploads/' . $find->image));
+            }
+            $find->delete();
+
+            return redirect()->back()->with('success', 'একটি প্রশ্ন সফল্ভাবে মুছে ফেলা হয়েছে');
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . (env('APP_ENV') == 'local' ? $th->getMessage() : ''));
         }

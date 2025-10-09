@@ -18,7 +18,7 @@ import {
 
 export default function Add({ class_data, subject, lassion, question_type }) {
     const [schoolCollaps, setSchoolCollaps] = useState(true);
-    const [mediaCollaps, setMediaCollaps] = useState(true);
+    const [mediaCollaps, setMediaCollaps] = useState(false);
     const [uddipokCollaps, setUddipokCollaps] = useState(true);
     const [cqsqCollaps, setCqSqCollaps] = useState(true);
     const [mcqCollAnsaps, setMcqAnsCollaps] = useState(true);

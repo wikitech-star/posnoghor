@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\School;
 use App\Http\Controllers\Controller;
 use App\Models\GroupClass;
 use App\Models\Lassion;
+use App\Models\Questions;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -87,6 +88,11 @@ class SubjectsController extends Controller
             // if any sine lassion
             if (Lassion::where('subject_id', $id)->count() > 0) {
                 return redirect()->back()->with('error', 'এই বিষয়ের সাথে অধ্যায় অ্যাসাইন করা আছে, তাই এটি মুছে ফেলা যাবে না।');
+            }
+
+            // if any subject assigned to this class, then don't allow to delete
+            if (Questions::where('subject_id', $id)->count() > 0) {
+                return redirect()->back()->with('error', 'এই বিষয় ব্যাবহার করে প্রশ্ন তৈরি করা আছে, তাই এটি মুছে ফেলা যাবে না।');
             }
 
             $subject = Subject::find($id);

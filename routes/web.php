@@ -80,7 +80,10 @@ Route::middleware(['isMaintance'])->group(function () {
         });
 
         // questions
-        Route::controller(QuestionController::class)->prefix('/question')->group(function(){
+        Route::controller(QuestionController::class)->prefix('/question')->group(function () {
+            Route::get('/all', 'index')->name('ux.question.all');
+            Route::get('/all/del/{id}', 'distroy')->name('ux.question.del');
+
             Route::get('/add', 'add_view')->name('ux.question.add');
             Route::post('/add', 'store')->name('ux.question.post');
         });
@@ -98,9 +101,9 @@ Route::middleware(['isMaintance'])->group(function () {
             Route::post('/mail-setting', 'update')->name('ux.mail.setting.post');
         });
         // google auth setting
-        Route::controller(GoogleAuthController::class)->prefix('/setting')->group(function(){
-             Route::get('/goole-auth-setting', 'index')->name('ux.goolge.auth.setting');
-             Route::get('/goole-auth-setting-status', 'updateStatus')->name('ux.goolge.auth.setting.status');
+        Route::controller(GoogleAuthController::class)->prefix('/setting')->group(function () {
+            Route::get('/goole-auth-setting', 'index')->name('ux.goolge.auth.setting');
+            Route::get('/goole-auth-setting-status', 'updateStatus')->name('ux.goolge.auth.setting.status');
             Route::post('/goole-auth-setting', 'update')->name('ux.goolge.auth.setting.post');
         });
 

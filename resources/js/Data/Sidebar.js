@@ -57,8 +57,8 @@ const ADMIN_SIDEBAR = [
     {
         name: "সকল প্রশ্ন",
         icon: BadgeQuestionMark,
-        link: route("ux.question.type"),
-        active: ["ux.question.type"],
+        link: route("ux.question.all"),
+        active: ["ux.question.all"],
         'role': ['admin', 'editor', 'support'],
         'pro': false
     },

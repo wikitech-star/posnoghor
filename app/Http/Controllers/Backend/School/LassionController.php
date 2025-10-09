@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\School;
 use App\Http\Controllers\Controller;
 use App\Models\GroupClass;
 use App\Models\Lassion;
+use App\Models\Questions;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -97,6 +98,11 @@ class LassionController extends Controller
     public function destroy($id)
     {
         try {
+            // if any subject assigned to this class, then don't allow to delete
+            if (Questions::where('lesson_id', $id)->count() > 0) {
+                return redirect()->back()->with('error', 'এই অধ্যায় ব্যাবহার করে প্রশ্ন তৈরি করা আছে, তাই এটি মুছে ফেলা যাবে না।');
+            }
+
             $lassion = Lassion::findOrFail($id);
             $lassion->delete();
 
