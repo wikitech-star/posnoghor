@@ -108,6 +108,35 @@ export default function Index({
                     <div className="flex flex-wrap lg:flex-nowrap items-center gap-3">
                         <select
                             className="select select-sm"
+                            value={searchType}
+                            onChange={(e) => setSearchType(e.target.value)}
+                        >
+                            <option value="" selected disabled>
+                                --প্রশ্নের ধরন--
+                            </option>
+                            <option value="">সকল</option>
+                            <option value="mcq">MCQ</option>
+                            <option value="cq">CQ</option>
+                            <option value="sq">SQ</option>
+                        </select>
+                        {searchType == "mcq" && (
+                            <select
+                                className="select select-sm"
+                                value={searchSubType}
+                                onChange={(e) =>
+                                    setSearchSubType(e.target.value)
+                                }
+                            >
+                                <option value="" selected disabled>
+                                    --MCQ ধরন--
+                                </option>
+                                <option value="">সকল</option>
+                                <option value="normal">সাধারন</option>
+                                <option value="hard">উচ্চতার দক্ষতা</option>
+                            </select>
+                        )}
+                        <select
+                            className="select select-sm"
                             value={groupClass}
                             onChange={(e) => setGroupClass(e.target.value)}
                         >
@@ -166,35 +195,6 @@ export default function Index({
                                 </option>
                             ))}
                         </select>
-                        <select
-                            className="select select-sm"
-                            value={searchType}
-                            onChange={(e) => setSearchType(e.target.value)}
-                        >
-                            <option value="" selected disabled>
-                                --প্রশ্নের ধরন--
-                            </option>
-                            <option value="">সকল</option>
-                            <option value="mcq">MCQ</option>
-                            <option value="cq">CQ</option>
-                            <option value="sq">SQ</option>
-                        </select>
-                        {searchType == "mcq" && (
-                            <select
-                                className="select select-sm"
-                                value={searchSubType}
-                                onChange={(e) =>
-                                    setSearchSubType(e.target.value)
-                                }
-                            >
-                                <option value="" selected disabled>
-                                    --MCQ ধরন--
-                                </option>
-                                <option value="">সকল</option>
-                                <option value="normal">সাধারন</option>
-                                <option value="hard">উচ্চতার দক্ষতা</option>
-                            </select>
-                        )}
                     </div>
                 </div>
             </div>
@@ -306,9 +306,7 @@ export default function Index({
                                     </td>
                                     <td>
                                         <div className="flex items-center gap-2">
-                                            <button
-                                                className="btn btn-xs btn-primary btn-circle"
-                                            >
+                                            <button className="btn btn-xs btn-primary btn-circle">
                                                 <Eye size={12} />
                                             </button>
                                             <Link
