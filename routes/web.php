@@ -82,6 +82,7 @@ Route::middleware(['isMaintance'])->group(function () {
         // questions
         Route::controller(QuestionController::class)->prefix('/question')->group(function(){
             Route::get('/add', 'add_view')->name('ux.question.add');
+            Route::post('/add', 'store')->name('ux.question.post');
         });
 
         // setting routes

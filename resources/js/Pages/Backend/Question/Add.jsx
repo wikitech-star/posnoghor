@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import MathEditor from "../../../Components/Parts/MathEditor";
 import LatexPreview from "../../../Components/Parts/LatexPreview";
 import { router, useForm } from "@inertiajs/react";
@@ -12,7 +12,7 @@ import { BANGLA_INDEX } from "../../../Utils/Helper";
 import {
     BrushCleaning,
     Check,
-    CornerUpLeftIcon,
+    LoaderIcon,
     RefreshCcw,
 } from "lucide-react";
 
@@ -50,10 +50,34 @@ export default function Add({ class_data, subject, lassion, question_type }) {
         mcqQuestionhard: [],
     });
 
+    // create form submit
+    const submitQuestion = (e) => {
+        e.preventDefault();
+        qFrom.post(route("ux.question.post"), {
+            onSuccess: () => {
+                qFrom.setData("image", null);
+                qFrom.setData("videoUrl", "");
+                qFrom.setData("searchTtitle", "");
+                qFrom.setData("questionTtitle", "");
+                qFrom.setData("cqsqQuestion", []);
+                qFrom.setData("mcqQuestion", []);
+                qFrom.setData("mcqQuestionhard", []);
+            },
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
     // reset
     useEffect(() => {
-        if (qFrom.data.question_type === "mcq") {
-            qFrom.reset("cqsqQuestion");
+        if (qFrom.data.question_type == "mcq") {
+            qFrom.setData("cqsqQuestion", []);
+        }
+        if (qFrom.data.question_type !== "mcq") {
+            qFrom.setData("question_label", "");
+            qFrom.setData("cqsqQuestion", []);
+            qFrom.setData("mcqQuestionhard", []);
+            qFrom.setData("mcqQuestion", []);
         }
     }, [qFrom.data.question_type]);
 
@@ -98,9 +122,9 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                         onClick={() => {
                             if (confirm("আপনি কি নিশ্চিত?")) {
                                 qFrom.reset();
-                                router.visit(route("ux.question.add"),{
+                                router.visit(route("ux.question.add"), {
                                     preserveScroll: true,
-                                    preserveState:  true
+                                    preserveState: true,
                                 });
                             }
                         }}
@@ -392,6 +416,17 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                                 </div>
                             </div>
                         )}
+
+                    <button
+                        onClick={submitQuestion}
+                        disabled={qFrom.processing}
+                        className="btn btn-primary btn-sm mt-2"
+                    >
+                        {qFrom.processing && (
+                            <LoaderIcon size={13} className="animate-spin" />
+                        )}{" "}
+                        সেভ করুন
+                    </button>
                 </div>
 
                 {/* preview */}

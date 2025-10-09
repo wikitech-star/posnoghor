@@ -72,18 +72,18 @@ export default function CursorSafeEditor({ value, onChange, error }) {
                 <div className="tooltip tooltip-right" data-tip="মুটা লেখা">
                     <button
                         onClick={() => execCommand("bold")}
-                        className="btn btn-sm btn-primary btn-square"
+                        className="btn btn-xs btn-primary btn-square"
                     >
-                        <Bold size={16} />
+                        <Bold size={12} />
                     </button>
                 </div>
 
                 <div className="tooltip tooltip-right" data-tip="বাকা লেখা">
                     <button
                         onClick={() => execCommand("italic")}
-                        className="btn btn-sm btn-primary btn-square"
+                        className="btn btn-xs btn-primary btn-square"
                     >
-                        <Italic size={16} />
+                        <Italic size={12} />
                     </button>
                 </div>
 
@@ -93,27 +93,27 @@ export default function CursorSafeEditor({ value, onChange, error }) {
                 >
                     <button
                         onClick={() => execCommand("underline")}
-                        className="btn btn-sm btn-primary btn-square"
+                        className="btn btn-xs btn-primary btn-square"
                     >
-                        <Underline size={16} />
+                        <Underline size={12} />
                     </button>
                 </div>
 
                 <div className="tooltip tooltip-right" data-tip="পূর্বাবস্থা">
                     <button
                         onClick={handleUndo}
-                        className="btn btn-sm btn-warning btn-square"
+                        className="btn btn-xs btn-warning btn-square"
                     >
-                        <UndoDot size={16} />
+                        <UndoDot size={12} />
                     </button>
                 </div>
 
                 <div className="tooltip tooltip-right" data-tip="পুনরায়">
                     <button
                         onClick={handleRedo}
-                        className="btn btn-sm btn-success btn-square"
+                        className="btn btn-xs btn-success btn-square"
                     >
-                        <RedoDot size={16} />
+                        <RedoDot size={12} />
                     </button>
                 </div>
 
@@ -123,9 +123,9 @@ export default function CursorSafeEditor({ value, onChange, error }) {
                 >
                     <button
                         onClick={() => wrapSelection("inline")}
-                        className="btn btn-sm btn-secondary btn-square"
+                        className="btn btn-xs btn-secondary btn-square"
                     >
-                        <DecimalsArrowLeft size={16} />
+                        <DecimalsArrowLeft size={12} />
                     </button>
                 </div>
 
@@ -135,9 +135,9 @@ export default function CursorSafeEditor({ value, onChange, error }) {
                 >
                     <button
                         onClick={() => wrapSelection("block")}
-                        className="btn btn-sm btn-info btn-square"
+                        className="btn btn-xs btn-info btn-square"
                     >
-                        <DecimalsArrowRight size={16} />
+                        <DecimalsArrowRight size={12} />
                     </button>
                 </div>
             </div>
