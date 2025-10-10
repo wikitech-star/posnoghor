@@ -76,6 +76,7 @@ class QuestionController extends Controller
                                 'id' => $opt->id,
                                 'text' => $opt->option_text,
                                 'is_correct' => $opt->is_correct,
+                                'type' => $opt->type
                             ];
                         }
                         if (in_array($q->type, ['cq', 'sq'])) {
@@ -262,6 +263,9 @@ class QuestionController extends Controller
             $q->q_type_id = $request->type_id;
 
             $q->type = $request->question_type;
+            if($request->question_type == 'mcq'){
+                $q->mcq_type = $request->question_label;
+            }
             $q->title = $request->searchTtitle;
             $q->body = $request->questionTtitle;
 

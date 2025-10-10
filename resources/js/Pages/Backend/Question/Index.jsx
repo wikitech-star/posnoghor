@@ -1,13 +1,24 @@
 import { Link, router } from "@inertiajs/react";
-import { Eye, Frown, Funnel, MoveRight, Pen, Plus, Trash } from "lucide-react";
+import {
+    Check,
+    Eye,
+    Frown,
+    Funnel,
+    MoveRight,
+    Pen,
+    Plus,
+    Trash,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import Header from "../../../Components/Parts/Header";
 import Paginations from "../../../Components/Parts/Paginations";
 import {
+    BANGLA_INDEX,
     ENGLISH_DATE_TO_BANGLA,
     ENGLISH_TO_BANGLA,
 } from "../../../Utils/Helper";
 import LatexPreview from "../../../Components/Parts/LatexPreview";
+import Model from "../../../Components/Parts/Model";
 
 export default function Index({
     data,
@@ -27,7 +38,6 @@ export default function Index({
     const [lesClass, setLesClass] = useState(query?.lid || "");
     const [TidClass, setTidClass] = useState(query?.tid || "");
     const isFirstRender = useRef(true);
-
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -63,6 +73,14 @@ export default function Index({
         lesClass,
         TidClass,
     ]);
+
+    // preview
+    const [previewModel, setPreviewModel] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const closePreviwModel = () => {
+        setViewData(null);
+        setPreviewModel(false);
+    };
 
     return (
         <div className="bg-white p-6 rounded-box space-y-6">
@@ -212,7 +230,7 @@ export default function Index({
                             <tr>
                                 <th></th>
                                 <th>স্কুল</th>
-                                <th>প্রশ্ন</th>
+                                <th>উদ্দিপক</th>
                                 <th>তৈরি করেছেন</th>
                                 <th>সর্বশেষ পরিবর্তন</th>
                                 <th>কার্যক্রম</th>
@@ -306,7 +324,13 @@ export default function Index({
                                     </td>
                                     <td>
                                         <div className="flex items-center gap-2">
-                                            <button className="btn btn-xs btn-primary btn-circle">
+                                            <button
+                                                onClick={() => {
+                                                    setViewData(item);
+                                                    setPreviewModel(true);
+                                                }}
+                                                className="btn btn-xs btn-primary btn-circle"
+                                            >
                                                 <Eye size={12} />
                                             </button>
                                             <Link
@@ -343,6 +367,134 @@ export default function Index({
 
             {/* pagination */}
             <Paginations data={data} />
+
+            {/* preview model */}
+            <Model
+                model={previewModel}
+                title={
+                    viewData
+                        ? `${viewData?.question_type.toUpperCase()} প্রশ্নের প্রিভিউ`
+                        : "প্রশ্ন প্রিভিউ"
+                }
+                callback={closePreviwModel}
+                modelClassName="min-w-[600px]"
+            >
+                {viewData && (
+                    <>
+                        {viewData?.question_type !== "sq" && (
+                            <>
+                                <h1 className="text-sm text-gray-500 font-bold mb-1">
+                                    উদ্দিপকঃ
+                                </h1>
+                                <LatexPreview
+                                    content={
+                                        viewData.body.substring(0, 200) + "..."
+                                    }
+                                />
+                            </>
+                        )}
+
+                        <div className="mt-3">
+                            <p className="text-sm text-gray-500 font-bold mb-1">
+                                প্রশ্নঃ
+                            </p>
+                            {viewData?.question_type !== "mcq" && (
+                                <>
+                                    {viewData?.options?.map((val, i) => (
+                                        <div
+                                            className="flex items-center gap-2 py-0.5"
+                                            key={i}
+                                        >
+                                            <p>{BANGLA_INDEX(i)}.</p>
+                                            <LatexPreview content={val?.text} />
+                                            {viewData?.question_type ===
+                                                "mcq" && val?.is_correct ? (
+                                                <Check size={13} />
+                                            ) : null}
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+
+                            {/* mcq */}
+                            {viewData?.question_type === "mcq" && (
+                                <>
+                                    {viewData?.options
+                                        ?.filter((val) => val.type === "normal")
+                                        .map((val, i) => (
+                                            <div
+                                                className="flex items-center gap-2 py-0.5"
+                                                key={i}
+                                            >
+                                                <p>{BANGLA_INDEX(i)}.</p>
+                                                <LatexPreview
+                                                    content={val?.text}
+                                                />
+                                                {viewData?.question_type ===
+                                                    "mcq" && val?.is_correct ? (
+                                                    <Check size={13} />
+                                                ) : null}
+                                            </div>
+                                        ))}
+                                </>
+                            )}
+                            {/* mcq hard label */}
+                            {viewData?.question_type === "mcq" &&
+                                viewData?.mcq_label === "উচ্চতার দক্ষতা" && (
+                                    <p className="text-gray-500 font-sm text-bold py-2">
+                                        নিচের কোনটি সঠিক?
+                                    </p>
+                                )}
+                            {viewData?.question_type === "mcq" &&
+                                viewData?.mcq_label === "উচ্চতার দক্ষতা" && (
+                                    <>
+                                        {viewData?.options
+                                            ?.filter(
+                                                (val) => val.type === "hard"
+                                            )
+                                            .map((val, i) => (
+                                                <div
+                                                    className="flex items-center gap-2 py-0.5"
+                                                    key={i}
+                                                >
+                                                    <p>{BANGLA_INDEX(i)}.</p>
+                                                    <LatexPreview
+                                                        content={val?.text}
+                                                    />
+                                                    {val?.is_correct ? (
+                                                        <div className="bg-green-100 rounded-full flex items-center justify-center w-4 h-4 text-green-600">
+                                                            <Check size={10} />
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            ))}
+                                    </>
+                                )}
+                        </div>
+
+                        <div className="mt-5 flex items-center gap-2 justify-end">
+                            <Link className="btn btn-xs btn-info">
+                                <Pen size={11} /> সম্পাদন
+                            </Link>
+                            <button
+                                onClick={() =>
+                                    confirm(
+                                        `আপনি কি নিশ্চিত ${viewData?.question_type?.toUpperCase()} প্রশ্নটি মুছে ফেলতেচান?`
+                                    ) &&
+                                    router.get(
+                                        route("ux.question.del", {
+                                            id: viewData.id,
+                                        })
+                                    )
+                                }
+                                className="btn btn-xs btn-error"
+                            >
+                                <Trash size={11} /> মুছেফেলা
+                            </button>
+                        </div>
+                    </>
+                )}
+            </Model>
 
             <Header title="সকল প্রশ্ন" />
         </div>

@@ -3,7 +3,8 @@ import React from "react";
 
 export default function Model({
     model,
-    setModel,
+    setModel = null,
+    callback = null,
     title,
     modelClassName,
     children,
@@ -15,7 +16,13 @@ export default function Model({
                 <div className="flex-between mb-4 border-b pb-4 border-base-content/10">
                     <h1 className="text-neutral font-semibold">{title}</h1>
                     <button
-                        onClick={() => setModel(false)}
+                        onClick={() => {
+                            if (callback) {
+                                callback();
+                            } else {
+                                setModel(false);
+                            }
+                        }}
                         className="btn btn-circle btn-xs btn-error"
                     >
                         <X size={12} />
