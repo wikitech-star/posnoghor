@@ -335,7 +335,9 @@ export default function Index({
                                             </button>
                                             <Link
                                                 title="সম্পাদন করুন"
-                                                href={""}
+                                                href={route("ux.question.add", {
+                                                    editid: item.id,
+                                                })}
                                                 className="btn btn-xs btn-info btn-circle"
                                             >
                                                 <Pen size={12} />

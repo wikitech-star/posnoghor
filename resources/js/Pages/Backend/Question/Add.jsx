@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MathEditor from "../../../Components/Parts/MathEditor";
 import LatexPreview from "../../../Components/Parts/LatexPreview";
-import { router, useForm } from "@inertiajs/react";
+import { Link, router, useForm } from "@inertiajs/react";
 import Header from "../../../Components/Parts/Header";
 import Select from "../../../Components/Parts/Select";
 import FileInput from "../../../Components/Parts/FileInput";
@@ -10,13 +10,23 @@ import DynamicMathEditor from "../../../Components/Parts/DynamicMathEditor";
 import DynamicMathEditorBoth from "../../../Components/Parts/DynamicMathEditorBoth";
 import { BANGLA_INDEX } from "../../../Utils/Helper";
 import {
+    ArrowUpFromDot,
     BrushCleaning,
     Check,
     LoaderIcon,
     RefreshCcw,
+    X,
 } from "lucide-react";
 
-export default function Add({ class_data, subject, lassion, question_type }) {
+export default function Add({
+    class_data,
+    subject,
+    lassion,
+    question_type,
+    update,
+}) {
+    console.log(update);
+
     const [schoolCollaps, setSchoolCollaps] = useState(true);
     const [mediaCollaps, setMediaCollaps] = useState(false);
     const [uddipokCollaps, setUddipokCollaps] = useState(true);
@@ -26,21 +36,23 @@ export default function Add({ class_data, subject, lassion, question_type }) {
 
     const qFrom = useForm({
         // required data
-        question_type: "",
-        question_label: "",
-        class_id: "",
-        subject_id: "",
-        lassion_id: "",
-        type_id: "",
+        id: update?.id || "",
+        question_type: update?.type || "",
+        question_label: update?.mcq_type || "",
+        class_id: update?.class_id || "",
+        subject_id: update?.subject_id || "",
+        lassion_id: update?.lesson_id || "",
+        type_id: update?.q_type_id || "",
 
         // media
         image: null,
-        imagePosition: "center",
-        videoUrl: "",
+        imageOld: (update?.image && "/uploads/" + update?.image) || "",
+        imagePosition: update?.image_align || "center",
+        videoUrl: update?.youtube_url || "",
 
         // question
-        searchTtitle: "",
-        questionTtitle: "",
+        searchTtitle: update?.title || "",
+        questionTtitle: update?.body || "",
 
         // cq sq
         cqsqQuestion: [],
@@ -49,6 +61,43 @@ export default function Add({ class_data, subject, lassion, question_type }) {
         mcqQuestion: [],
         mcqQuestionhard: [],
     });
+
+    // set update
+    useEffect(() => {
+        // for mcq
+        if (update?.type === "mcq") {
+            const normalOptions =
+                update?.options
+                    ?.filter((val) => val.type === "normal")
+                    ?.map((opt) => ({
+                        id: opt.id,
+                        value: opt.option_text,
+                        isRight: !!opt.is_correct,
+                    })) || [];
+
+            const hardOptions =
+                update?.options
+                    ?.filter((val) => val.type === "hard")
+                    ?.map((opt) => ({
+                        id: opt.id,
+                        value: opt.option_text,
+                        isRight: !!opt.is_correct,
+                    })) || [];
+
+            qFrom.setData("mcqQuestion", normalOptions);
+            qFrom.setData("mcqQuestionhard", hardOptions);
+        }
+
+        if (update?.type === "cq" || update?.type === "sq") {
+            const sqcqoptions =
+                update?.options?.map((opt) => ({
+                    id: opt.id,
+                    question: opt.questions,
+                    answer: opt?.ans,
+                })) || [];
+            qFrom.setData("cqsqQuestion", sqcqoptions);
+        }
+    }, [update]);
 
     // create form submit
     const submitQuestion = (e) => {
@@ -70,6 +119,7 @@ export default function Add({ class_data, subject, lassion, question_type }) {
 
     // reset
     useEffect(() => {
+        if (update?.id) return;
         if (qFrom.data.question_type == "mcq") {
             qFrom.setData("cqsqQuestion", []);
         }
@@ -83,6 +133,8 @@ export default function Add({ class_data, subject, lassion, question_type }) {
 
     // search
     useEffect(() => {
+        if (update?.id) return;
+
         if (qFrom.data.class_id || qFrom.data.subject_id) {
             const delayDebounceFn = setTimeout(() => {
                 router.get(
@@ -118,20 +170,35 @@ export default function Add({ class_data, subject, lassion, question_type }) {
             <div className="flex flex-col lg:flex-row justify-between gap-3">
                 {/* form */}
                 <div className="space-y-3 w-full lg:w-[60%]">
-                    <button
-                        onClick={() => {
-                            if (confirm("আপনি কি নিশ্চিত?")) {
-                                qFrom.reset();
-                                router.visit(route("ux.question.add"), {
-                                    preserveScroll: true,
-                                    preserveState: true,
-                                });
-                            }
-                        }}
-                        className="btn btn-xs btn-error float-end"
-                    >
-                        <RefreshCcw size={14} /> সব পরিষ্কার করুন
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => {
+                                setSchoolCollaps(false);
+                                setMediaCollaps(false);
+                                setUddipokCollaps(false);
+                                setCqSqCollaps(false);
+                                setMcqAnsCollaps(false);
+                                setMcqHAnsCollaps(false);
+                            }}
+                            className="btn btn-primary btn-xs"
+                        >
+                            <ArrowUpFromDot size={14} /> সব গুটিয়ে ফেলুন
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (confirm("আপনি কি নিশ্চিত?")) {
+                                    qFrom.reset();
+                                    router.visit(route("ux.question.add"), {
+                                        preserveScroll: true,
+                                        preserveState: true,
+                                    });
+                                }
+                            }}
+                            className="btn btn-xs btn-error"
+                        >
+                            <RefreshCcw size={14} /> সব পরিষ্কার করুন
+                        </button>
+                    </div>
 
                     {/* required data */}
                     <div
@@ -153,6 +220,7 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                         >
                             <Select
                                 label="প্রশ্নের ধরন*"
+                                disabled={update?.id}
                                 options={{ mcq: "MCQ", cq: "CQ", sq: "SQ" }}
                                 oldVal={qFrom.data.question_type}
                                 onChange={(e) =>
@@ -166,6 +234,7 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                             {qFrom.data.question_type === "mcq" && (
                                 <Select
                                     label="MCQ ধরন*"
+                                    disabled={update?.id}
                                     options={{
                                         normal: "সাধারন",
                                         hard: "উচ্চতার দক্ষতা",
@@ -244,6 +313,7 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                         >
                             <FileInput
                                 onChange={(f) => qFrom.setData("image", f)}
+                                old={qFrom.data.imageOld}
                                 error={qFrom.errors.image}
                                 accept="image/png,.jpg,.jpeg"
                             />
@@ -337,7 +407,7 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                                 <DynamicMathEditorBoth
                                     qFrom={qFrom}
                                     name="cqsqQuestion"
-                                    defaultCount={1}
+                                    defaultCount={0}
                                     defaultValues={qFrom.data.cqsqQuestion}
                                 />
                             </div>
@@ -417,26 +487,57 @@ export default function Add({ class_data, subject, lassion, question_type }) {
                             </div>
                         )}
 
-                    <button
-                        onClick={submitQuestion}
-                        disabled={qFrom.processing}
-                        className="btn btn-primary btn-sm mt-2"
-                    >
-                        {qFrom.processing && (
-                            <LoaderIcon size={13} className="animate-spin" />
-                        )}{" "}
-                        সেভ করুন
-                    </button>
+                    <div className="flex items-center gap-4 mt-2">
+                        <button
+                            onClick={submitQuestion}
+                            disabled={qFrom.processing}
+                            className="btn btn-primary btn-sm"
+                        >
+                            {qFrom.processing && (
+                                <LoaderIcon
+                                    size={13}
+                                    className="animate-spin"
+                                />
+                            )}{" "}
+                            {update?.id ? "পরিবর্তন করুন" : "সেভ করুন"}
+                        </button>
+
+                        {update?.id && (
+                            <Link
+                                href={route("ux.question.all")}
+                                className="text-sm font-normal text-error flex items-center gap-1"
+                            >
+                                <X size={12} /> বাতিল করুন
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 {/* preview */}
-                <div className="border border-gray-300 rounded-box p-5 max-h-fit sticky top-25 w-full lg:w-[40%]">
+                <div className="border border-gray-400 border-dashed rounded-box p-5 max-h-fit sticky top-25 w-full lg:w-[40%]">
                     {(qFrom.data.searchTtitle ||
                         qFrom.data.questionTtitle ||
                         qFrom.data?.cqsqQuestion.length > 0) && (
                         <h1 className="text-md font-bold mb-4 text-gray-500">
                             প্রশ্নের ডেমু
                         </h1>
+                    )}
+
+                    {qFrom.data.imageOld && (
+                        <div
+                            className={`mb-3 flex items-center justify-${
+                                qFrom.data.imagePosition === "center"
+                                    ? "center"
+                                    : qFrom.data.imagePosition === "left"
+                                    ? "start"
+                                    : "end"
+                            }`}
+                        >
+                            <img
+                                src={qFrom.data.imageOld}
+                                className="max-h-[150px] w-auto"
+                            />
+                        </div>
                     )}
 
                     {/* search title */}

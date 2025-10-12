@@ -12,7 +12,7 @@ export default function LatexHtmlPreview({ content }) {
         let html = content;
 
         // Render block LaTeX $$...$$ first
-        html = html.replace(/\$\$(.+?)\$\$/gs, (_, tex) => {
+        html = html && html.replace(/\$\$(.+?)\$\$/gs, (_, tex) => {
             try {
                 return katex.renderToString(tex, { displayMode: true });
             } catch {
@@ -21,7 +21,7 @@ export default function LatexHtmlPreview({ content }) {
         });
 
         // Render inline LaTeX $...$
-        html = html.replace(/\$(.+?)\$/g, (_, tex) => {
+        html = html && html.replace(/\$(.+?)\$/g, (_, tex) => {
             try {
                 return katex.renderToString(tex, { displayMode: false });
             } catch {

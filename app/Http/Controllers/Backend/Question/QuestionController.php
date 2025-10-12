@@ -108,6 +108,7 @@ class QuestionController extends Controller
             ->pluck('name', 'id')
             ->toArray();
 
+
         return Inertia::render('Backend/Question/Index', [
             'query' => $query,
             'data' => $data,
@@ -121,17 +122,45 @@ class QuestionController extends Controller
     // add =================
     public function add_view(Request $request)
     {
+        // update
+        $editId = $request->query('editid');
+        $update = null;
+        if ($editId && !empty($editId)) {
+            $dataquery = Questions::query();
+            $update = $dataquery->find($editId);
+
+            if ($update) {
+                if ($update->type === 'mcq') {
+                    $update->setRelation('options', $update->mcqOptions);
+                } elseif (in_array($update->type, ['cq', 'sq'])) {
+                    $update->setRelation('options', $update->cqsqOptions);
+                }
+            }
+        }
+
         $class_id = $request->query('class_id');
         $subject_id = $request->query('subject_id');
+
+        // class
         if (isset($class_id) && !empty($class_id)) {
             $subject = Subject::where('class_id', $class_id)->pluck('name', 'id')->toArray();
         } else {
-            $subject = null;
+            if ($update) {
+                $subject = Subject::where('class_id', $update?->class_id)->pluck('name', 'id')->toArray();
+            } else {
+                $subject = null;
+            }
         }
+
+        // subject
         if ((isset($class_id) && !empty($class_id)) && (isset($subject_id) && !empty($subject_id))) {
             $lassion = Lassion::where('class_id', $class_id)->where('subject_id', $subject_id)->pluck('name', 'id')->toArray();
         } else {
-            $lassion = null;
+            if ($update) {
+                $lassion = Lassion::where('class_id', $update?->class_id)->where('subject_id', $update?->subject_id)->pluck('name', 'id')->toArray();
+            } else {
+                $lassion = null;
+            }
         }
         $questionTypes = Question_type::pluck('name', 'id')->toArray();
 
@@ -139,7 +168,8 @@ class QuestionController extends Controller
             'class_data' => GroupClass::pluck('name', 'id')->toArray(),
             'question_type' => count($questionTypes) ? $questionTypes : null,
             'subject' => $subject,
-            'lassion' => $lassion
+            'lassion' => $lassion,
+            'update' => $update
         ]);
     }
 
@@ -263,7 +293,7 @@ class QuestionController extends Controller
             $q->q_type_id = $request->type_id;
 
             $q->type = $request->question_type;
-            if($request->question_type == 'mcq'){
+            if ($request->question_type == 'mcq') {
                 $q->mcq_type = $request->question_label;
             }
             $q->title = $request->searchTtitle;
@@ -288,6 +318,10 @@ class QuestionController extends Controller
             if ($qsave) {
                 // mcq
                 if ($request->question_type == 'mcq') {
+                    // if update request delete option
+                    if ($request->id) {
+                        McqOptions::where('question_id', $request->id)->delete();
+                    }
                     if ($request->question_label == 'normal' || $request->question_label == 'hard') {
                         foreach ($request->mcqQuestion as $mnquestion) {
                             $mq = new McqOptions();
@@ -312,6 +346,10 @@ class QuestionController extends Controller
 
                 // sq or cq
                 if ($request->question_type == 'cq' || $request->question_type == 'sq') {
+                    // if update request delete option
+                    if ($request->id) {
+                        CqAnswers::where('question_id', $request->id)->delete();
+                    }
                     foreach ($request->cqsqQuestion as $question) {
                         $c = new CqAnswers();
                         $c->question_id = $q->id;
@@ -322,17 +360,22 @@ class QuestionController extends Controller
                 }
             }
 
-            $statusMessage = 'নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+            $statusMessage =$request->id ?  'প্রশ্ন পরিবর্তন সফল হয়ছে।' : 'নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             if ($request->question_type == 'mcq') {
-                $statusMessage = ' MCQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+                $statusMessage = $request->id ? 'MCQ প্রশ্ন পরিবর্তন সফল হয়ছে।' :'MCQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
             if ($request->question_type == 'cq') {
-                $statusMessage = ' CQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+                $statusMessage = $request->id ? 'CQ প্রশ্ন পরিবর্তন সফল হয়ছে।' :'CQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
             if ($request->question_type == 'sq') {
-                $statusMessage = ' SQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+                $statusMessage = $request->id ? 'SQ প্রশ্ন পরিবর্তন সফল হয়ছে।' :'SQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
-            return redirect()->back()->with('success', $statusMessage);
+
+            if ($request->id) {
+                return redirect()->route('ux.question.all')->with('success', $statusMessage);
+            } else {
+                return redirect()->back()->with('success', $statusMessage);
+            }
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . (env('APP_ENV') == 'local' ? $th->getMessage() : ''));
         }
