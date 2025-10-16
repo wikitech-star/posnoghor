@@ -475,7 +475,12 @@ export default function Index({
                         </div>
 
                         <div className="mt-5 flex items-center gap-2 justify-end">
-                            <Link className="btn btn-xs btn-info">
+                            <Link
+                                href={route("ux.question.add", {
+                                    editid: viewData.id,
+                                })}
+                                className="btn btn-xs btn-info"
+                            >
                                 <Pen size={11} /> সম্পাদন
                             </Link>
                             <button

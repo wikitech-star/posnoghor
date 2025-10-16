@@ -301,6 +301,12 @@ class QuestionController extends Controller
 
             $q->youtube_url = $request->videoUrl;
             $q->image_align = $request->imagePosition;
+
+            $q->meta = json_encode([
+                'taq'=>$request->tags,
+                'yars'=>$request->yars,
+                'start'=>$request->start,
+            ]);
             // image
             if ($request->hasFile('image')) {
                 $favicon = $request->file('image');
@@ -360,15 +366,15 @@ class QuestionController extends Controller
                 }
             }
 
-            $statusMessage =$request->id ?  'প্রশ্ন পরিবর্তন সফল হয়ছে।' : 'নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+            $statusMessage = $request->id ? 'প্রশ্ন পরিবর্তন সফল হয়ছে।' : 'নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             if ($request->question_type == 'mcq') {
-                $statusMessage = $request->id ? 'MCQ প্রশ্ন পরিবর্তন সফল হয়ছে।' :'MCQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+                $statusMessage = $request->id ? 'MCQ প্রশ্ন পরিবর্তন সফল হয়ছে।' : 'MCQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
             if ($request->question_type == 'cq') {
-                $statusMessage = $request->id ? 'CQ প্রশ্ন পরিবর্তন সফল হয়ছে।' :'CQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+                $statusMessage = $request->id ? 'CQ প্রশ্ন পরিবর্তন সফল হয়ছে।' : 'CQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
             if ($request->question_type == 'sq') {
-                $statusMessage = $request->id ? 'SQ প্রশ্ন পরিবর্তন সফল হয়ছে।' :'SQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
+                $statusMessage = $request->id ? 'SQ প্রশ্ন পরিবর্তন সফল হয়ছে।' : 'SQ নতুন প্রশ্ন তৈরি সফল হয়ছে।';
             }
 
             if ($request->id) {

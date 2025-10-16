@@ -25,14 +25,13 @@ export default function Add({
     question_type,
     update,
 }) {
-    console.log(update);
-
     const [schoolCollaps, setSchoolCollaps] = useState(true);
     const [mediaCollaps, setMediaCollaps] = useState(false);
     const [uddipokCollaps, setUddipokCollaps] = useState(true);
     const [cqsqCollaps, setCqSqCollaps] = useState(true);
     const [mcqCollAnsaps, setMcqAnsCollaps] = useState(true);
     const [mcqHCollAnsaps, setMcqHAnsCollaps] = useState(true);
+    const [taqsCollaps, setTaqsCollaps] = useState(true);
 
     const qFrom = useForm({
         // required data
@@ -60,7 +59,54 @@ export default function Add({
         // mcq
         mcqQuestion: [],
         mcqQuestionhard: [],
+
+        // taqs
+        tags: [],
+        yars: [],
+        start: "",
     });
+    useEffect(() => {
+        const taqJson = update?.meta ? JSON.parse(update?.meta) : [];
+        if (taqJson) {
+            qFrom.setData("tags", taqJson?.taq || []);
+            qFrom.setData("yars", taqJson?.yars || []);
+            qFrom.setData("start", taqJson?.start || []);
+        }
+    }, [update]);
+
+    // taqs state
+    const [tagInput, setTagInput] = useState("");
+    const addTag = (e) => {
+        e.preventDefault();
+        const newTag = tagInput.trim();
+        if (newTag !== "" && !qFrom?.data.tags.includes(newTag)) {
+            qFrom.setData("tags", [...qFrom?.data.tags, newTag]);
+            setTagInput("");
+        }
+    };
+    const removeTag = (tagToRemove) => {
+        qFrom.setData(
+            "tags",
+            qFrom?.data.tags.filter((t) => t !== tagToRemove)
+        );
+    };
+
+    // yeras
+    const [tagYarsInput, setyarsTagInput] = useState("");
+    const addYears = (e) => {
+        e.preventDefault();
+        const newTag = tagYarsInput.trim();
+        if (newTag !== "" && !qFrom?.data.yars.includes(newTag)) {
+            qFrom.setData("yars", [...qFrom?.data.yars, newTag]);
+            setyarsTagInput("");
+        }
+    };
+    const removeYears = (tagToRemove) => {
+        qFrom.setData(
+            "yars",
+            qFrom?.data.yars.filter((t) => t !== tagToRemove)
+        );
+    };
 
     // set update
     useEffect(() => {
@@ -179,6 +225,7 @@ export default function Add({
                                 setCqSqCollaps(false);
                                 setMcqAnsCollaps(false);
                                 setMcqHAnsCollaps(false);
+                                setTaqsCollaps(false);
                             }}
                             className="btn btn-primary btn-xs"
                         >
@@ -486,6 +533,131 @@ export default function Add({
                                 </div>
                             </div>
                         )}
+
+                    {/* taqs */}
+                    <div
+                        tabIndex={0}
+                        className={`collapse ${
+                            taqsCollaps ? "collapse-open" : "collapse-close"
+                        } collapse-plus bg-base-100 border-base-300 border`}
+                    >
+                        <div
+                            className="collapse-title font-semibold text-sm bg-primary text-neutral"
+                            onClick={() => setTaqsCollaps(!taqsCollaps)}
+                        >
+                            ট্যাগ
+                        </div>
+                        <div
+                            className={`collapse-content space-y-4 ${
+                                taqsCollaps && "pt-3"
+                            }`}
+                        >
+                            {/* board */}
+                            <fieldset className="fieldset">
+                                <legend className="fieldset-legend">
+                                    বোর্ড
+                                </legend>
+                                <div className="flex flex-wrap gap-2 border border-gray-300 rounded-box p-2">
+                                    {qFrom?.data.tags.map((tag, index) => (
+                                        <div
+                                            key={index}
+                                            className="bg-primary/20 text-neutral px-2 py-1 rounded-box flex items-center gap-1"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeTag(tag)}
+                                                className="text-red-500 font-bold"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <input
+                                        type="text"
+                                        value={tagInput}
+                                        onChange={(e) =>
+                                            setTagInput(e.target.value)
+                                        }
+                                        onKeyDown={(e) =>
+                                            e.key === "Enter" && addTag(e)
+                                        }
+                                        className="flex-grow p-1 focus:outline-none"
+                                        placeholder="Type and press Enter"
+                                    />
+                                </div>
+                            </fieldset>
+
+                            {/* yaers */}
+                            <fieldset className="fieldset">
+                                <legend className="fieldset-legend">
+                                    বর্ষ
+                                </legend>
+                                <div className="flex flex-wrap gap-2 border border-gray-300 rounded-box p-2">
+                                    {qFrom?.data.yars.map((tag, index) => (
+                                        <div
+                                            key={index}
+                                            className="bg-primary/20 text-neutral px-2 py-1 rounded-box flex items-center gap-1"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeYears(tag)}
+                                                className="text-red-500 font-bold"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <input
+                                        type="number"
+                                        value={tagYarsInput}
+                                        onChange={(e) =>
+                                            setyarsTagInput(e.target.value)
+                                        }
+                                        onKeyDown={(e) =>
+                                            e.key === "Enter" && addYears(e)
+                                        }
+                                        className="flex-grow p-1 focus:outline-none"
+                                        placeholder="Type and press Enter"
+                                    />
+                                </div>
+                            </fieldset>
+
+                            {/* star */}
+                            <fieldset className="fieldset">
+                                <legend className="fieldset-legend">
+                                    স্টার
+                                </legend>
+                                <div className="w-full">
+                                    <input
+                                        type="range"
+                                        min={1}
+                                        max="3"
+                                        value={qFrom.data.start}
+                                        onChange={(e) =>
+                                            qFrom.setData(
+                                                "start",
+                                                e.target.value
+                                            )
+                                        }
+                                        className="range w-full"
+                                        step="1"
+                                    />
+                                    <div className="flex justify-between px-2.5 mt-2 text-xs">
+                                        <span>|</span>
+                                        <span>|</span>
+                                        <span>|</span>
+                                    </div>
+                                    <div className="flex justify-between px-2.5 mt-2 text-xs">
+                                        <span>১</span>
+                                        <span>২</span>
+                                        <span>৩</span>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
 
                     <div className="flex items-center gap-4 mt-2">
                         <button
