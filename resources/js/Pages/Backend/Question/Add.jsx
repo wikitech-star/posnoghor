@@ -63,7 +63,7 @@ export default function Add({
         // taqs
         tags: [],
         yars: [],
-        start: "",
+        start: 0,
     });
     useEffect(() => {
         const taqJson = update?.meta ? JSON.parse(update?.meta) : [];
@@ -633,8 +633,8 @@ export default function Add({
                                     <input
                                         type="range"
                                         min={1}
-                                        max="3"
-                                        value={qFrom.data.start}
+                                        max={4}
+                                        value={Number(qFrom?.data?.start)}
                                         onChange={(e) =>
                                             qFrom.setData(
                                                 "start",
@@ -642,7 +642,7 @@ export default function Add({
                                             )
                                         }
                                         className="range w-full"
-                                        step="1"
+                                        step={1}
                                     />
                                     <div className="flex justify-between px-2.5 mt-2 text-xs">
                                         <span>|</span>
