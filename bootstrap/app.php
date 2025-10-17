@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\Auth;
+use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\Guest;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HasNoRole;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'hasRole' => HasRole::class,
             'hasNoRole' => HasNoRole::class,
             'isMaintance' => IsMaintance::class,
+            'role' => CheckRole::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

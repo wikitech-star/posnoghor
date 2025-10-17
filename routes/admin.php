@@ -11,7 +11,7 @@ use App\Http\Controllers\Backend\Setting\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 // auth routes
-Route::middleware(['auth', 'hasNoRole'])->prefix('app')->group(function () {
+Route::middleware(['auth', 'hasNoRole', 'role:admin'])->prefix('app')->group(function () {
     // dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('ux.dashboard');
 
