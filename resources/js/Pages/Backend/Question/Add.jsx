@@ -62,7 +62,6 @@ export default function Add({
 
         // taqs
         tags: [],
-        yars: [],
         start: 0,
     });
     useEffect(() => {
@@ -88,23 +87,6 @@ export default function Add({
         qFrom.setData(
             "tags",
             qFrom?.data.tags.filter((t) => t !== tagToRemove)
-        );
-    };
-
-    // yeras
-    const [tagYarsInput, setyarsTagInput] = useState("");
-    const addYears = (e) => {
-        e.preventDefault();
-        const newTag = tagYarsInput.trim();
-        if (newTag !== "" && !qFrom?.data.yars.includes(newTag)) {
-            qFrom.setData("yars", [...qFrom?.data.yars, newTag]);
-            setyarsTagInput("");
-        }
-    };
-    const removeYears = (tagToRemove) => {
-        qFrom.setData(
-            "yars",
-            qFrom?.data.yars.filter((t) => t !== tagToRemove)
         );
     };
 
@@ -177,28 +159,38 @@ export default function Add({
         }
     }, [qFrom.data.question_type]);
 
-    // search
+    // pre data
+    const [subjectData, setSubjectData] = useState(null);
+    const [lessionData, setLessionData] = useState(null);
     useEffect(() => {
-        if (update?.id) return;
+        if (qFrom.data.class_id) {
+            // subject data preparing
+            const subjectObject = Object.fromEntries(
+                subject
+                    .filter((s) => qFrom?.data?.class_id.includes(s.class_id))
+                    .map(({ id, name }) => [id, name])
+            );
 
-        if (qFrom.data.class_id || qFrom.data.subject_id) {
-            const delayDebounceFn = setTimeout(() => {
-                router.get(
-                    route("ux.question.add"),
-                    {
-                        class_id: qFrom.data.class_id,
-                        subject_id: qFrom.data.subject_id,
-                    },
-                    {
-                        preserveState: true,
-                        replace: true,
-                    }
-                );
-            }, 500);
+            // lession data preparing
+            const lessionObject = Object.fromEntries(
+                (lassion || [])
+                    .filter(
+                        (l) =>
+                            Number(qFrom?.data?.class_id) === Number(l.class_id)
+                    )
+                    .filter(
+                        (l) =>
+                            Number(qFrom?.data?.subject_id) ===
+                            Number(l.subject_id)
+                    )
+                    .map(({ id, name }) => [id, name])
+            );
 
-            return () => clearTimeout(delayDebounceFn);
+            // store in state
+            setLessionData(lessionObject);
+            setSubjectData(subjectObject);
         }
-    }, [qFrom.data.class_id, qFrom.data.subject_id]);
+    }, [qFrom.data]);
 
     return (
         <div className="bg-white p-6 rounded-box space-y-6">
@@ -309,8 +301,8 @@ export default function Add({
                             />
                             <Select
                                 label="বিষয়*"
-                                options={subject || {}}
-                                disabled={subject == null}
+                                options={subjectData || {}}
+                                disabled={subjectData == null}
                                 oldVal={qFrom.data.subject_id}
                                 onChange={(e) =>
                                     qFrom.setData("subject_id", e.target.value)
@@ -319,8 +311,8 @@ export default function Add({
                             />
                             <Select
                                 label="অধ্যায়*"
-                                options={lassion || {}}
-                                disabled={lassion == null}
+                                options={lessionData || {}}
+                                disabled={lessionData == null}
                                 oldVal={qFrom.data.lassion_id}
                                 onChange={(e) =>
                                     qFrom.setData("lassion_id", e.target.value)
@@ -581,42 +573,6 @@ export default function Add({
                                         }
                                         onKeyDown={(e) =>
                                             e.key === "Enter" && addTag(e)
-                                        }
-                                        className="flex-grow p-1 focus:outline-none"
-                                        placeholder="Type and press Enter"
-                                    />
-                                </div>
-                            </fieldset>
-
-                            {/* yaers */}
-                            <fieldset className="fieldset">
-                                <legend className="fieldset-legend">
-                                    বর্ষ
-                                </legend>
-                                <div className="flex flex-wrap gap-2 border border-gray-300 rounded-box p-2">
-                                    {qFrom?.data.yars.map((tag, index) => (
-                                        <div
-                                            key={index}
-                                            className="bg-primary/20 text-neutral px-2 py-1 rounded-box flex items-center gap-1"
-                                        >
-                                            {tag}
-                                            <button
-                                                type="button"
-                                                onClick={() => removeYears(tag)}
-                                                className="text-red-500 font-bold"
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
-                                    ))}
-                                    <input
-                                        type="number"
-                                        value={tagYarsInput}
-                                        onChange={(e) =>
-                                            setyarsTagInput(e.target.value)
-                                        }
-                                        onKeyDown={(e) =>
-                                            e.key === "Enter" && addYears(e)
                                         }
                                         className="flex-grow p-1 focus:outline-none"
                                         placeholder="Type and press Enter"

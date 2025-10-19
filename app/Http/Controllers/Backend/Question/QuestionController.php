@@ -138,30 +138,13 @@ class QuestionController extends Controller
             }
         }
 
-        $class_id = $request->query('class_id');
-        $subject_id = $request->query('subject_id');
-
-        // class
-        if (isset($class_id) && !empty($class_id)) {
-            $subject = Subject::where('class_id', $class_id)->pluck('name', 'id')->toArray();
-        } else {
-            if ($update) {
-                $subject = Subject::where('class_id', $update?->class_id)->pluck('name', 'id')->toArray();
-            } else {
-                $subject = null;
-            }
-        }
-
         // subject
-        if ((isset($class_id) && !empty($class_id)) && (isset($subject_id) && !empty($subject_id))) {
-            $lassion = Lassion::where('class_id', $class_id)->where('subject_id', $subject_id)->pluck('name', 'id')->toArray();
-        } else {
-            if ($update) {
-                $lassion = Lassion::where('class_id', $update?->class_id)->where('subject_id', $update?->subject_id)->pluck('name', 'id')->toArray();
-            } else {
-                $lassion = null;
-            }
-        }
+        $subject = Subject::select('name', 'class_id', 'id')->get();
+
+        // lessin
+        $lassion = Lassion::select('name', 'class_id', 'subject_id', 'id')->get();
+
+        // type
         $questionTypes = Question_type::pluck('name', 'id')->toArray();
 
         return Inertia::render('Backend/Question/Add', [
@@ -303,9 +286,8 @@ class QuestionController extends Controller
             $q->image_align = $request->imagePosition;
 
             $q->meta = json_encode([
-                'taq'=>$request->tags,
-                'yars'=>$request->yars,
-                'start'=>$request->start,
+                'taq' => $request->tags,
+                'start' => $request->start,
             ]);
             // image
             if ($request->hasFile('image')) {
