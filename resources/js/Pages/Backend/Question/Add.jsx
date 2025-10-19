@@ -167,7 +167,7 @@ export default function Add({
             // subject data preparing
             const subjectObject = Object.fromEntries(
                 subject
-                    .filter((s) => qFrom?.data?.class_id.includes(s.class_id))
+                    .filter((s) => Number(qFrom?.data?.class_id) === s.class_id)
                     .map(({ id, name }) => [id, name])
             );
 
@@ -190,7 +190,7 @@ export default function Add({
             setLessionData(lessionObject);
             setSubjectData(subjectObject);
         }
-    }, [qFrom.data]);
+    }, [qFrom.data, update]);
 
     return (
         <div className="bg-white p-6 rounded-box space-y-6">
@@ -589,7 +589,7 @@ export default function Add({
                                     <input
                                         type="range"
                                         min={1}
-                                        max={4}
+                                        max={3}
                                         value={Number(qFrom?.data?.start)}
                                         onChange={(e) =>
                                             qFrom.setData(

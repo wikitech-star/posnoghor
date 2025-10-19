@@ -87,6 +87,7 @@ class QuestionController extends Controller
                             ];
                         }
                     }),
+                    'meta' => $q->meta,
                     'created_at' => $q->created_at->format('d M, Y'),
                     'updated_at' => $q->updated_at->format('d M, Y'),
                 ];

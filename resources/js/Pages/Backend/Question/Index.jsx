@@ -19,6 +19,7 @@ import {
 } from "../../../Utils/Helper";
 import LatexPreview from "../../../Components/Parts/LatexPreview";
 import Model from "../../../Components/Parts/Model";
+import Start from "../../../Components/Parts/Start";
 
 export default function Index({
     data,
@@ -383,6 +384,23 @@ export default function Index({
             >
                 {viewData && (
                     <>
+                        {(() => {
+                            const metaData = JSON.parse(viewData?.meta) || [];
+                            return (
+                                <div className="flex items-center gap-1 justify-end">
+                                    <Start
+                                        start={Number(metaData?.start) || 0}
+                                        max={3}
+                                    />
+                                    {metaData?.taq && (
+                                        <mark className="text-sm font-normal px-1 py-1">
+                                            {metaData?.taq?.join(", ")}
+                                        </mark>
+                                    )}
+                                </div>
+                            );
+                        })()}
+
                         {viewData?.question_type !== "sq" && (
                             <>
                                 <h1 className="text-sm text-gray-500 font-bold mb-1">
