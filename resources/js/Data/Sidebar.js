@@ -1,21 +1,27 @@
-import { BadgePlus, BadgeQuestionMark, Book, BookOpenText, FileQuestionMark, Home, Key, MailWarning, Settings, University } from "lucide-react";
+import { BadgePlus, BadgeQuestionMark, Book, BookOpenText, FileQuestionMark, Home, Key, MailWarning, Plus, Settings, University } from "lucide-react";
 
 const ADMIN_SIDEBAR = [
+    // for all
     {
         title: "সার্বিক চিত্র",
         isTitle: true,
+        'role': ['admin', 'editor', 'support', 'teacher'],
     },
     {
         name: "ড্যাশবোর্ড",
         icon: Home,
         link: route("ux.dashboard"),
         active: ["ux.dashboard"],
-        'role': ['admin', 'editor', 'support'],
+        'role': ['admin', 'editor', 'support', 'teacher'],
         'pro': false
     },
+
+
+    // for amin
     {
         title: "স্কুল",
         isTitle: true,
+        'role': ['admin', 'editor', 'support'],
     },
     {
         name: "শ্রেনী ম্যানেজমেন্ট",
@@ -53,6 +59,7 @@ const ADMIN_SIDEBAR = [
     {
         title: "ব্যাংক",
         isTitle: true,
+        'role': ['admin', 'editor', 'support'],
     },
     {
         name: "সকল প্রশ্ন",
@@ -73,6 +80,7 @@ const ADMIN_SIDEBAR = [
     {
         title: "সেটিংস",
         isTitle: true,
+        'role': ['admin'],
     },
     {
         name: "সাইট সেটিংস",
@@ -96,6 +104,16 @@ const ADMIN_SIDEBAR = [
         link: route("ux.goolge.auth.setting"),
         active: ["ux.goolge.auth.setting"],
         'role': ['admin'],
+        'pro': false
+    },
+
+    // for teahcer
+    {
+        name: "১ ক্লিকে প্রশ্ন তৈরী",
+        icon: Plus,
+        link: route("tech.create.new.questions"),
+        active: ["tech.create.new.questions"],
+        'role': ['teacher'],
         'pro': false
     },
 ];

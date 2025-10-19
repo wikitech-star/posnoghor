@@ -1,5 +1,4 @@
 <?php
-use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\Question\QuestionController;
 use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
@@ -12,9 +11,6 @@ use Illuminate\Support\Facades\Route;
 
 // auth routes
 Route::middleware(['auth', 'hasNoRole', 'role:admin'])->prefix('app')->group(function () {
-    // dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('ux.dashboard');
-
     // class routes
     Route::controller(GroupClassController::class)->group(function () {
         Route::get('/group-class', 'index')->name('ux.group.class');

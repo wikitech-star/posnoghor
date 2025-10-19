@@ -9,12 +9,15 @@ export default function AdminMenu() {
         <div>
             {ADMIN_SIDEBAR.map((item, index) =>
                 item.isTitle ? (
-                    <h4
-                        key={index}
-                        className="py-1 px-5 mt-2 text-sm text-white/70 font-semibold"
-                    >
-                        {item.title}
-                    </h4>
+                    (item.role?.includes("all") ||
+                        item.role?.includes(auth?.role)) && (
+                        <h4
+                            key={index}
+                            className="py-1 px-5 mt-2 text-sm text-white/70 font-semibold"
+                        >
+                            {item.title}
+                        </h4>
+                    )
                 ) : item.role?.includes("all") ||
                   item.role?.includes(auth?.role) ? (
                     <Link

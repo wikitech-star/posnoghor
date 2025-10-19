@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,9 @@ Route::middleware(['isMaintance'])->group(function () {
     });
 });
 
+// dashboard for all roles
+Route::get('/dashboard', [DashboardController::class, 'index'])->prefix('app')->middleware(['auth', 'hasNoRole', 'role:teacher,admin,editor'])->name('ux.dashboard');
+
 // single routes
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
@@ -42,4 +46,5 @@ Route::get('/maintenance', function () {
 })->name('maintenance');
 
 // other routes files
-include __DIR__ . '/admin.php';
+include __DIR__ . '/admin.php'; // for admin routes
+include __DIR__ . '/teacher.php'; // for teacher routes

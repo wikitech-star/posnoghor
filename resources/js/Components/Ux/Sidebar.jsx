@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Logo from "../Parts/Logo";
 import { usePage } from "@inertiajs/react";
 import AdminMenu from "./AdminMenu";
@@ -26,7 +25,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             </div>
 
             {/* menus */}
-            {auth.role === "admin" && <AdminMenu />}
+            <AdminMenu />
         </div>
     );
 }
