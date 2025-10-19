@@ -15,23 +15,11 @@ import toast from "react-hot-toast";
 
 export default function Lassion({ data, filters, class_data, subject_data }) {
     const [modelOpen, setModleOpen] = useState(false);
-
-    // page loading
-    const [loading, setLoading] = useState(false);
-    useEffect(() => {
-        router.on("start", () => {
-            setLoading(true);
-        });
-        router.on("finish", () => {
-            setLoading(false);
-        });
-    }, []);
+    const [subjects, setSubjects] = useState(null);
 
     // search
     const [search, setSearch] = useState(filters.search ?? "");
-    const [classSearch, setClassSearch] = useState(filters.class_id ?? "");
     const isFirstRender = useRef(true);
-
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -41,7 +29,7 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
         const delayDebounceFn = setTimeout(() => {
             router.get(
                 route("ux.lassion"),
-                { search: search, class_id: classSearch },
+                { search: search },
                 {
                     preserveState: true,
                     replace: true,
@@ -50,7 +38,7 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [search, classSearch]);
+    }, [search]);
 
     // form
     const lassionForm = useForm({
@@ -92,6 +80,20 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                 toast.error("অধায়ের তথ্য পাওয়া যায়নি, আবার চেষ্টা করুন!");
             });
     };
+
+    // set pre data
+    useEffect(() => {
+        if (lassionForm.data.class_id) {
+            const subjectObject = Object.fromEntries(
+                subject_data
+                    .filter((s) =>
+                        lassionForm.data.class_id?.includes(s.class_id)
+                    )
+                    .map(({ id, name }) => [id, name])
+            );
+            setSubjects(subjectObject);
+        }
+    }, [lassionForm.data.class_id]);
 
     return (
         <div className="bg-white p-6 rounded-box space-y-6">
@@ -199,7 +201,6 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
             {/* add or update model */}
             <Model
                 model={modelOpen}
-                loading={loading}
                 title={lassionForm.data.id ? "অধ্যায় আপডেট" : "নতুন অধ্যায়"}
                 setModel={setModleOpen}
             >
@@ -212,7 +213,6 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                             value={lassionForm.data.class_id}
                             onChange={(e) => {
                                 lassionForm.setData("class_id", e.target.value);
-                                setClassSearch(e.target.value);
                             }}
                             error={lassionForm.errors.class_id}
                         />
@@ -220,7 +220,7 @@ export default function Lassion({ data, filters, class_data, subject_data }) {
                         <Select
                             label="বিষয়*"
                             name="subject_data"
-                            options={subject_data}
+                            options={subjects || {}}
                             value={lassionForm.data.subject_id}
                             disabled={!lassionForm.data.class_id}
                             onChange={(e) =>

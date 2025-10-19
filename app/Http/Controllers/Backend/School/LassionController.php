@@ -20,11 +20,7 @@ class LassionController extends Controller
         $class_data = GroupClass::pluck('name', 'id')->toArray();
 
         // subject data
-        $subject_query = Subject::query();
-        if ($request->has('class_id') && !empty($request->class_id)) {
-            $subject_query->where('class_id', $request->class_id);
-        }
-        $subject_data = $subject_query->pluck('name', 'id')->toArray();
+        $subject_data = Subject::select('name', 'class_id', 'id')->get();
 
         return Inertia::render("Backend/School/Lassion", [
             'data' => Lassion::with(['subject', 'classes'])
@@ -40,7 +36,7 @@ class LassionController extends Controller
                     'updated_at' => $lassion->updated_at->format('d M, Y'),
                 ])
                 ->withQueryString(),
-            'filters' => $request->only("search", 'class_id'),
+            'filters' => $request->only("search"),
             'class_data' => $class_data,
             'subject_data' => $subject_data,
         ]);
