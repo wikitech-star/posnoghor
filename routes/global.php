@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Backend\Question\QuestionController;
+use App\Http\Controllers\Shared\Questions\QuestionsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'hasNoRole', 'role:teacher'])->prefix('app')->group(function () {
     // questions
-    Route::controller(QuestionController::class)->group(function () {
-        Route::get('/create-new-qestion', 'index')->name('g.create.new.questions');
+    Route::controller(QuestionsController::class)->group(function () {
+        Route::get('/create-new-paper', 'index')->name('g.create.new.questions');
     });
 });

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Global\Question;
+namespace App\Http\Controllers\Shared\Questions;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupClass;
@@ -9,9 +9,8 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class QuestionController extends Controller
+class QuestionsController extends Controller
 {
-    // index
     public function index()
     {
         // class
@@ -29,7 +28,7 @@ class QuestionController extends Controller
             ->whereIn('subject_id', $subjects_ides)
             ->select('name', 'class_id', 'subject_id', 'id')->get();
 
-        return Inertia::render('Global/Questions/Index', [
+        return Inertia::render('Shared/Questions/Index', [
             'group_class' => $group_class,
             'subjects' => $subjects,
             'lassion' => $lassion
