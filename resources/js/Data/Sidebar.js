@@ -111,9 +111,9 @@ const ADMIN_SIDEBAR = [
     {
         name: "১ ক্লিকে প্রশ্ন তৈরী",
         icon: Plus,
-        link: route("tech.create.new.questions"),
-        active: ["tech.create.new.questions"],
-        'role': ['teacher'],
+        link: route("g.create.new.questions"),
+        active: ["g.create.new.questions"],
+        'role': ['teacher', 'admin', 'editor'],
         'pro': false
     },
 ];

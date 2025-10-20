@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Teach\Question;
+namespace App\Http\Controllers\Global\Question;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupClass;
@@ -29,7 +29,7 @@ class QuestionController extends Controller
             ->whereIn('subject_id', $subjects_ides)
             ->select('name', 'class_id', 'subject_id', 'id')->get();
 
-        return Inertia::render('Teacher/Questions/Index', [
+        return Inertia::render('Global/Questions/Index', [
             'group_class' => $group_class,
             'subjects' => $subjects,
             'lassion' => $lassion

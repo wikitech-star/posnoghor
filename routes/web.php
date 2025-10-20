@@ -48,3 +48,4 @@ Route::get('/maintenance', function () {
 // other routes files
 include __DIR__ . '/admin.php'; // for admin routes
 include __DIR__ . '/teacher.php'; // for teacher routes
+include __DIR__ . '/global.php'; // for all uers routes
