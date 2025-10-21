@@ -10,10 +10,26 @@ import { ArrowRight, Expand, Ribbon } from "lucide-react";
 export default function Index({ group_class, subjects, lassion }) {
     // create questionForm
     const qFrom = useForm({
+        program_name: "",
         class_id: "",
         subjects: [],
         lassions: [],
+        types: "",
     });
+
+    // form submit
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+
+        qFrom.post(route("g.create.new.questions.paper"), {
+            onSuccess: () => {
+                qFrom.reset();
+            },
+            preserveScroll: true,
+            preserveState: true,
+            preserveUrl: true,
+        });
+    };
 
     // reset preset subject or lession
     useEffect(() => {
@@ -46,51 +62,89 @@ export default function Index({ group_class, subjects, lassion }) {
                     <Input
                         label="পরিক্ষার নাম*"
                         type="text"
+                        value={qFrom.data.program_name}
+                        onChange={(e) =>
+                            qFrom.setData("program_name", e.target.value)
+                        }
+                        error={qFrom.errors.program_name}
                         placeholder="প্রোগ্রাম/পরিক্ষার নাম লিখুন"
                     />
                     <Select
                         label="শ্রেণি*"
                         options={group_class}
                         oldVal={qFrom.data.class_id}
+                        error={qFrom.errors.class_id}
                         onChange={(e) =>
                             qFrom.setData("class_id", e.target.value)
                         }
                     />
-                    <button
-                        className="input cursor-pointer text-left"
-                        disabled={Boolean(qFrom.data.class_id == "")}
-                        onClick={() => setSubjectModel(!subjectModel)}
-                    >
-                        <p>
-                            বিষয়{" "}
-                            {qFrom.data.subjects.length > 0 &&
-                                ENGLISH_TO_BANGLA(qFrom.data.subjects.length) +
-                                    "+" +
-                                    " " +
-                                    "এটি বিষয়"}
-                        </p>
-                        <Expand size={14} />
-                    </button>
-                    <button
-                        onClick={() => setLessionModel(!lessionModel)}
-                        disabled={Boolean(qFrom.data.subjects.length <= 0)}
-                        className="input text-left cursor-pointer"
-                    >
-                        <p>
-                            অধ্যায়{" "}
-                            {qFrom.data.lassions.length > 0 &&
-                                ENGLISH_TO_BANGLA(qFrom.data.lassions.length) +
-                                    "+" +
-                                    " " +
-                                    "এটি অধ্যায়"}
-                        </p>
-                        <Expand size={14} />
-                    </button>
-                    <div className="grid gap-4 grid-cols-2">
-                        <Select label="প্রশ্নের ধরণ*" />
-                        <Input label="মোট প্রশ্ন*" type="number" />
+                    <div>
+                        <button
+                            className="input cursor-pointer text-left"
+                            disabled={Boolean(qFrom.data.class_id == "")}
+                            onClick={() => setSubjectModel(!subjectModel)}
+                        >
+                            <p>
+                                বিষয়{" "}
+                                {qFrom.data.subjects.length > 0 &&
+                                    ENGLISH_TO_BANGLA(
+                                        qFrom.data.subjects.length
+                                    ) +
+                                        "+" +
+                                        " " +
+                                        "এটি বিষয়"}
+                            </p>
+                            <Expand size={14} />
+                        </button>
+                        {qFrom.errors.subjects && (
+                            <p className="text-sm text-error">
+                                {qFrom.errors.subjects}
+                            </p>
+                        )}
                     </div>
-                    <button className="btn btn-primary group">
+
+                    <div>
+                        <button
+                            onClick={() => setLessionModel(!lessionModel)}
+                            disabled={Boolean(qFrom.data.subjects.length <= 0)}
+                            className="input text-left cursor-pointer"
+                        >
+                            <p>
+                                অধ্যায়{" "}
+                                {qFrom.data.lassions.length > 0 &&
+                                    ENGLISH_TO_BANGLA(
+                                        qFrom.data.lassions.length
+                                    ) +
+                                        "+" +
+                                        " " +
+                                        "এটি অধ্যায়"}
+                            </p>
+                            <Expand size={14} />
+                        </button>
+                        {qFrom.errors.lassions && (
+                            <p className="text-sm text-error">
+                                {qFrom.errors.lassions}
+                            </p>
+                        )}
+                    </div>
+
+                    <Select
+                        onChange={(e) => qFrom.setData("types", e.target.value)}
+                        oldVal={qFrom.data.types}
+                        label="প্রশ্নের ধরণ*"
+                        error={qFrom.errors.types}
+                        options={{
+                            mcq: "বহুনির্বাচনী",
+                            cq: "সৃজনশীল",
+                            sq: "সাধারণ জ্ঞান",
+                            all: "(বহু, সৃজন, জ্ঞান) সব একসাথে",
+                        }}
+                    />
+                    <button
+                        onClick={handleFormSubmit}
+                        disabled={qFrom.processing}
+                        className="btn btn-primary group"
+                    >
                         প্রশ্ন তৈরি করুন{" "}
                         <ArrowRight
                             className="duration-300 group-hover:ml-2"
