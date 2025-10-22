@@ -574,7 +574,7 @@ export default function Add({
                                         onKeyDown={(e) =>
                                             e.key === "Enter" && addTag(e)
                                         }
-                                        className="flex-grow p-1 focus:outline-none"
+                                        className="flex p-1 focus:outline-none"
                                         placeholder="Type and press Enter"
                                     />
                                 </div>
