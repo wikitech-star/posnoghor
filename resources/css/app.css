@@ -93,7 +93,7 @@
 
 @layer base {
     body {
-        @apply font-base selection:bg-primary selection:text-white w-full;
+        @apply font-base selection:bg-primary selection:text-white;
     }
     .katex {
         @apply font-sans;

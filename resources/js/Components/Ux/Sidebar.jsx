@@ -8,8 +8,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
     return (
         <div
-            className={`h-screen w-0 bg-neutral fixed top-0 left-0 lg:static z-[100] overflow-y-auto duration-300 ${
-                sidebarOpen ? "w-[300px]" : "w-0"
+            className={`h-screen w-0 bg-neutral fixed top-0 left-0 lg:static z-100 overflow-y-auto duration-300 ${
+                sidebarOpen ? "min-w-[300px]" : "w-0"
             }`}
         >
             {/* header */}

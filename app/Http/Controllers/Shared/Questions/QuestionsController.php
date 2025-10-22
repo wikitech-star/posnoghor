@@ -7,7 +7,10 @@ use App\Models\GroupClass;
 use App\Models\Lassion;
 use App\Models\Subject;
 use App\Models\QuestionPaper;
+use App\Models\Questions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
 
 class QuestionsController extends Controller
@@ -58,9 +61,53 @@ class QuestionsController extends Controller
             // create a new paper
             $q = new QuestionPaper();
             $q->created_id = Auth::id();
+            $q->program_name = $request->program_name;
+            $q->class_id = $request->class_id;
+            $q->subjects = json_encode($request->subjects);
+            $q->lession = json_encode($request->lassions);
+            $q->type = $request->types;
+            $q->save();
 
+            return to_route('g.load.questions', ['id' => $q->id]);
         } catch (\Exception $th) {
-            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.'.env('APP_ENV') == 'local' ?? $th->getMessage());
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }
+    }
+
+    // load questions
+    public function load_questions(Request $request, $id)
+    {
+        // paper data
+        $paperData =  QuestionPaper::findOrFail($id);
+
+        // make type
+        // Determine question types
+        $newTypes = $paperData->type === 'all'
+            ? ['mcq', 'cq', 'sq']
+            : [$paperData->type];
+
+        // question
+        $dataquery = Questions::query();
+        $dataquery->whereIn('type', $newTypes);
+        $dataquery->where('class_id', $paperData->class_id);
+        $dataquery->whereIn('subject_id', json_decode($paperData->subjects, true));
+        $dataquery->whereIn('lesson_id', json_decode($paperData->lession, true));
+        $data = $dataquery->with(['group_class', 'subject', 'lession', 'topics', 'createdby', 'updatedby'])
+            ->latest()
+            ->paginate(10)
+            ->through(function ($q) {
+                if ($q->type === 'mcq') {
+                    $q->setRelation('options', $q->mcqOptions);
+                } elseif (in_array($q->type, ['cq', 'sq'])) {
+                    $q->setRelation('options', $q->cqsqOptions);
+                }
+                return $q;
+            });
+
+
+        return Inertia::render('Shared/Questions/LoadQuestions', [
+            'paper_data' => $paperData,
+            'data' => $data
+        ]);
     }
 }
