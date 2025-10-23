@@ -68,7 +68,7 @@ class QuestionsController extends Controller
             $q->type = $request->types;
             $q->save();
 
-            return to_route('g.load.questions', ['id' => $q->id]);
+            return redirect()->route('g.load.questions', ['id' => $q->id]);
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }

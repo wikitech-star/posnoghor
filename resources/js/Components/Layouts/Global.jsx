@@ -66,9 +66,9 @@ export default function Global({ title, children }) {
     }, []);
 
     return (
-        <div className="w-full overflow-hidden flex flex-col min-h-screen">
+        <div className="w-full">
             <Header title={title} />
-            <div className="h-full overflow-hidden w-full">{children}</div>
+            <div className="max-h-screen">{children}</div>
             <Toaster position="top-center" reverseOrder={false} />
         </div>
     );

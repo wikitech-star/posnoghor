@@ -13,17 +13,21 @@ export default function AuthLayout({ title, children }) {
     }, []);
     return (
         <Global title={title}>
-            <div className="flex">
+            <div className="flex items-start">
                 <Sidebar
                     sidebarOpen={sidebarOpen}
                     setSidebarOpen={setSidebarOpen}
                 />
-                <div className="flex flex-col w-full bg-gray-100 h-[500px] overflow-y-hidden">
+                <div
+                    className={`w-full h-screen ${
+                        sidebarOpen ? "md:ml-[300px]" : ""
+                    } duration-300`}
+                >
                     <Header
                         sidebarOpen={sidebarOpen}
                         setSidebarOpen={setSidebarOpen}
                     />
-                    <div className="p-5 overflow-y-auto h-full">{children}</div>
+                    <div className="p-5">{children}</div>
                 </div>
             </div>
         </Global>
