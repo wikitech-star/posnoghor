@@ -41,7 +41,7 @@ export default function LoadQuestions({ paper_data, data }) {
                     {data?.data?.map((question, index) => (
                         <div
                             key={index}
-                            className="p-4 border border-gray-300 rounded-box"
+                            className="p-4 border border-gray-300 rounded-box duration-300 hover:border-l-8 hover:border-r-8 hover:border-primary hover:shadow-md"
                         >
                             {/* uddipok */}
                             {(question.type == "cq" ||
