@@ -10,7 +10,6 @@ use App\Models\QuestionPaper;
 use App\Models\Questions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
 
 class QuestionsController extends Controller
@@ -77,6 +76,9 @@ class QuestionsController extends Controller
     // load questions
     public function load_questions(Request $request, $id)
     {
+        // query
+        $query = $request->only('type', 'search', 'taqs');
+
         // paper data
         $paperData =  QuestionPaper::findOrFail($id);
 
@@ -87,15 +89,27 @@ class QuestionsController extends Controller
             : [$paperData->type];
 
         // question
-        $dataquery = Questions::query();
-        $dataquery->whereIn('type', $newTypes);
-        $dataquery->where('class_id', $paperData->class_id);
-        $dataquery->whereIn('subject_id', json_decode($paperData->subjects, true));
-        $dataquery->whereIn('lesson_id', json_decode($paperData->lession, true));
-        $data = $dataquery->with(['group_class', 'subject', 'lession', 'topics', 'createdby', 'updatedby'])
-            ->latest()
-            ->paginate(10)
-            ->through(function ($q) {
+        $dataquery = Questions::query()
+            ->whereIn('type', $newTypes)
+            ->where('class_id', $paperData->class_id)
+            ->whereIn('subject_id', json_decode($paperData->subjects, true))
+            ->whereIn('lesson_id', json_decode($paperData->lession, true));
+
+        // optional filters
+        if (isset($query['type']) && in_array($query['type'], ['mcq', 'cq', 'sq'])) {
+            $dataquery->where('type', $query['type']);
+        }
+        if (!empty($query['search'])) {
+            $dataquery->where('body', 'like', '%' . $query['search'] . '%');
+        }
+        if (!empty($query['taqs'])) {
+            $dataquery->whereJsonContains('meta->taq', $query['taqs']);
+        }
+
+        // 1️⃣ প্রথমে full collection (no pagination) → unique taq বের করার জন্য
+        $allItems = $dataquery->with(['group_class', 'subject', 'lession', 'topics', 'createdby', 'updatedby'])
+            ->get()
+            ->map(function ($q) {
                 if ($q->type === 'mcq') {
                     $q->setRelation('options', $q->mcqOptions);
                 } elseif (in_array($q->type, ['cq', 'sq'])) {
@@ -104,10 +118,31 @@ class QuestionsController extends Controller
                 return $q;
             });
 
+        // 2️⃣ unique taq বের করা
+        $uniqueTaqs = $allItems
+            ->map(function ($item) {
+                $meta = is_string($item->meta) ? json_decode($item->meta, true) : $item->meta;
+                return $meta['taq'] ?? [];
+            })
+            ->flatten()
+            ->unique()
+            ->values();
+
+        // 3️⃣ paginate করা ডেটা (main list)
+        $data = $allItems->forPage(request('page', 1), 30)->values();
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $data,
+            $allItems->count(),
+            30,
+            request('page', 1),
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return Inertia::render('Shared/Questions/LoadQuestions', [
             'paper_data' => $paperData,
-            'data' => $data
+            'data' => $paginated,
+            'taqs' => $uniqueTaqs,
+            'filters' => $query,
         ]);
     }
 }

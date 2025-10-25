@@ -22,12 +22,11 @@ export default function Index({ group_class, subjects, lassion }) {
         e.preventDefault();
 
         qFrom.post(route("g.create.new.questions.paper"), {
-            onSuccess: () => {
+            onSuccess: (res) => {
                 qFrom.reset();
             },
             preserveScroll: true,
             preserveState: true,
-            preserveUrl: true,
         });
     };
 

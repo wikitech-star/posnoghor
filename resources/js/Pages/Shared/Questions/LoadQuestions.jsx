@@ -1,19 +1,74 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../../../Components/Parts/Header";
+import Input from "../../../Components/Parts/Input";
 import LatexPreview from "../../../Components/Parts/LatexPreview";
+import Paginations from "../../../Components/Parts/Paginations";
+import Start from "../../../Components/Parts/Start";
 import { BANGLA_INDEX, ENGLISH_TO_BANGLA } from "../../../Utils/Helper";
-import { Eye, Save } from "lucide-react";
+import { Eye, Save, X } from "lucide-react";
+import { useForm } from "@inertiajs/react";
 
-export default function LoadQuestions({ paper_data, data }) {
+export default function LoadQuestions({ paper_data, data, taqs, filters }) {
+    const searchForm = useForm({
+        search: filters?.search || "",
+        type: [],
+        taqs: filters?.taqs,
+    });
+
+    // search with debounce
+    const searchRaf = useRef(false);
+    useEffect(() => {
+        if (searchRaf.current) {
+            clearTimeout(searchRaf.current);
+        }
+        searchRaf.current = setTimeout(() => {
+            searchForm.get(route("g.load.questions", { id: paper_data?.id }), {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }, 500);
+    }, [searchForm.data]);
+
+    // handle select all questions
+    const [selectQuestions, setSelectQuestions] = useState([]);
+    const handleQuestionSelect = (questionId) => {
+        let updatedSelections = [...selectQuestions];
+        if (updatedSelections.includes(questionId)) {
+            updatedSelections = updatedSelections.filter(
+                (id) => id !== questionId
+            );
+        } else {
+            updatedSelections.push(questionId);
+        }
+        setSelectQuestions(updatedSelections);
+    };
+
+    // notify if wan to leave with unsaved changes
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (selectQuestions.length > 0) {
+                e.preventDefault();
+                e.returnValue =
+                    "আপনি নিশ্চিত যে আপনি এই পেজ ত্যাগ করতে চান? আপনার পরিবর্তনগুলি সংরক্ষিত নাও হতে পারে।";
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [selectQuestions]);
+
     return (
-        <div className="flex flex-col md:flex-row gap-3">
+        <div className="flex flex-col md:flex-row gap-8">
             {/* all questions */}
-            <div className="w-full md:w-[calc(100%-350px)] h-fit">
+            <div className="w-full md:w-[calc(100%-400px)] h-fit">
                 {/* header */}
                 <div className="flex items-center justify-between gap-3 bg-gray-50 p-3.5 rounded-box border border-gray-200">
                     <div className="flex items-center gap-2">
                         <span>
-                            মোট প্রশ্ন: ০/
+                            মোট প্রশ্ন:{" "}
+                            {ENGLISH_TO_BANGLA(selectQuestions.length)}/
                             {ENGLISH_TO_BANGLA(data?.total || 0)}
                         </span>
                     </div>
@@ -39,20 +94,58 @@ export default function LoadQuestions({ paper_data, data }) {
                 {/* view questions */}
                 <div className="flex flex-col gap-1.5">
                     {data?.data?.map((question, index) => (
-                        <div
+                        <button
+                            onClick={() => handleQuestionSelect(question.id)}
                             key={index}
-                            className="p-4 border border-gray-300 rounded-box duration-300 hover:border-l-8 hover:border-r-8 hover:border-primary hover:shadow-md"
+                            className={`p-4 border border-gray-300 rounded-box duration-300 hover:border-l-8 hover:border-r-8 ${
+                                selectQuestions.includes(question.id)
+                                    ? "hover:border-error"
+                                    : "hover:border-primary"
+                            } hover:shadow-md ${
+                                selectQuestions.includes(question.id)
+                                    ? "border-l-8 border-r-8 border-primary shadow-md"
+                                    : ""
+                            }`}
                         >
                             {/* uddipok */}
-                            {(question.type == "cq" ||
-                                question.type == "mcq") && (
-                                <div className="flex gap-2">
-                                    <span>
-                                        {ENGLISH_TO_BANGLA(index + 1)}.{" "}
-                                    </span>
-                                    <LatexPreview content={question?.body} />
-                                </div>
-                            )}
+                            <div className="flex flex-col gap-4">
+                                {(() => {
+                                    const metaData =
+                                        JSON.parse(question?.meta) || [];
+
+                                    if (!metaData) {
+                                        return null;
+                                    }
+
+                                    return (
+                                        <div className="flex items-center gap-1 justify-end">
+                                            <Start
+                                                start={
+                                                    Number(metaData?.start) || 0
+                                                }
+                                                max={3}
+                                            />
+                                            {metaData?.taq && (
+                                                <mark className="text-sm font-normal px-1 py-1">
+                                                    {metaData?.taq?.join(", ")}
+                                                </mark>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+
+                                {(question.type == "cq" ||
+                                    question.type == "mcq") && (
+                                    <div className="flex gap-2">
+                                        <span>
+                                            {ENGLISH_TO_BANGLA(index + 1)}.{" "}
+                                        </span>
+                                        <LatexPreview
+                                            content={question?.body}
+                                        />
+                                    </div>
+                                )}
+                            </div>
 
                             {/* questions */}
                             {/* mcq */}
@@ -135,13 +228,130 @@ export default function LoadQuestions({ paper_data, data }) {
                                     ))}
                                 </div>
                             )}
-                        </div>
+                        </button>
                     ))}
                 </div>
+
+                {/* pagination */}
+                <Paginations data={data} />
             </div>
 
             {/* filter */}
-            <div className="w-full md:w-[350px] h-fit"></div>
+            <div className="w-full md:w-[400px] h-fit">
+                <div className="border border-gray-200 rounded-box p-4 mb-5">
+                    <Input
+                        value={searchForm.data.search}
+                        onChange={(e) =>
+                            searchForm.setData("search", e.target.value)
+                        }
+                        label="সার্চ করুন"
+                        placeholder="সার্চ.."
+                    />
+                </div>
+
+                <div className="border border-gray-200 rounded-box mb-5">
+                    <div className="font-semibold flex items-center justify-between bg-gray-100 text-neutral px-3 py-2 text-sm rounded-t-box">
+                        <span>টাইপ</span>
+                        {searchForm.data.type.length > 0 && (
+                            <button
+                                onClick={() => {
+                                    searchForm.setData("type", []);
+                                }}
+                                className="btn btn-xs btn-error btn-circle"
+                            >
+                                <X size={12} />
+                            </button>
+                        )}
+                    </div>
+                    <div className="flex flex-col">
+                        {paper_data?.type == "all" ? (
+                            <>
+                                {["mcq", "cq", "sq"].map((t) => (
+                                    <label
+                                        key={t}
+                                        className="label text-sm text-neutral border-b border-gray-200 py-2.5 px-4 last:border-0 cursor-pointer flex items-center gap-2"
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="type"
+                                            value={t}
+                                            checked={searchForm.data.type === t}
+                                            onChange={(e) => {
+                                                searchForm.setData(
+                                                    "type",
+                                                    e.target.value
+                                                );
+                                            }}
+                                            className="radio"
+                                        />
+                                        {t === "mcq" && "বহুনির্বাচনী প্রশ্ন"}
+                                        {t === "cq" && "সৃজনশীল"}
+                                        {t === "sq" && "সংক্ষিপ্ত"}
+                                    </label>
+                                ))}
+                            </>
+                        ) : (
+                            <label className="label text-sm text-neutral border-b border-gray-200 py-2.5 px-4 last:border-0 cursor-pointer flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="type"
+                                    value={paper_data?.type}
+                                    checked={
+                                        searchForm.data.type ===
+                                        paper_data?.type
+                                    }
+                                    onChange={(e) => {
+                                        searchForm.setData(
+                                            "type",
+                                            e.target.value
+                                        );
+                                    }}
+                                    className="radio"
+                                />
+
+                                {paper_data?.type === "mcq"
+                                    ? "বহুনির্বাচনী প্রশ্ন"
+                                    : paper_data?.type === "cq"
+                                    ? "সৃজনশীল"
+                                    : "সংক্ষিপ্ত"}
+                            </label>
+                        )}
+                    </div>
+                </div>
+
+                <div className="border border-gray-200 rounded-box mb-5">
+                    <div className="font-semibold flex items-center justify-between bg-gray-100 text-neutral px-3 py-2 text-sm rounded-t-box">
+                        <span>টাইপ</span>
+                        {searchForm.data.taqs && (
+                            <button
+                                onClick={() => {
+                                    searchForm.setData("taqs", "");
+                                }}
+                                className="btn btn-xs btn-error btn-circle"
+                            >
+                                <X size={12} />
+                            </button>
+                        )}
+                    </div>
+                    {taqs.map((val, i) => (
+                        <label
+                            key={i}
+                            className="label text-sm text-neutral border-b border-gray-200 py-2.5 px-4 last:border-0 cursor-pointer flex items-center gap-2"
+                        >
+                            <input
+                                type="radio"
+                                name="taqs"
+                                value={val}
+                                onChange={(e) => {
+                                    searchForm.setData("taqs", e.target.value);
+                                }}
+                                className="radio"
+                            />
+                            {val}
+                        </label>
+                    ))}
+                </div>
+            </div>
             <Header title="প্রশ্ন বাছায়" />
         </div>
     );
