@@ -6,9 +6,16 @@ import Paginations from "../../../Components/Parts/Paginations";
 import Start from "../../../Components/Parts/Start";
 import { BANGLA_INDEX, ENGLISH_TO_BANGLA } from "../../../Utils/Helper";
 import { Eye, Save, X } from "lucide-react";
-import { useForm } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
+import toast from "react-hot-toast";
 
-export default function LoadQuestions({ paper_data, data, taqs, filters }) {
+export default function LoadQuestions({
+    paper_data,
+    data,
+    taqs,
+    filters,
+    old_added_questions,
+}) {
     const searchForm = useForm({
         search: filters?.search || "",
         type: [],
@@ -30,8 +37,12 @@ export default function LoadQuestions({ paper_data, data, taqs, filters }) {
     }, [searchForm.data]);
 
     // handle select all questions
-    const [selectQuestions, setSelectQuestions] = useState([]);
+    const [needSave, setNeedSave] = useState(false);
+    const [selectQuestions, setSelectQuestions] = useState(
+        old_added_questions || []
+    );
     const handleQuestionSelect = (questionId) => {
+        needSave || setNeedSave(true);
         let updatedSelections = [...selectQuestions];
         if (updatedSelections.includes(questionId)) {
             updatedSelections = updatedSelections.filter(
@@ -59,8 +70,33 @@ export default function LoadQuestions({ paper_data, data, taqs, filters }) {
         };
     }, [selectQuestions]);
 
+    // handle save questions to paper
+    const handleSaveQuestions = (e) => {
+        e.preventDefault();
+
+        if (selectQuestions.length === 0) {
+            toast.error("কোনো প্রশ্ন নির্বাচন করা হয়নি।");
+            return;
+        }
+
+        router.post(
+            route("g.load.questions.post"),
+            {
+                id: paper_data?.id,
+                data: selectQuestions,
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    setNeedSave(false);
+                },
+            }
+        );
+    };
+
     return (
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-10">
             {/* all questions */}
             <div className="w-full md:w-[calc(100%-400px)] h-fit">
                 {/* header */}
@@ -78,10 +114,17 @@ export default function LoadQuestions({ paper_data, data, taqs, filters }) {
                         </h1>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button className="btn btn-sm btn-soft">
+                        <button
+                            disabled={needSave}
+                            className="btn btn-sm btn-soft"
+                        >
                             <Eye size={13} /> প্রিভিউ
                         </button>
-                        <button className="btn btn-primary btn-sm">
+                        <button
+                            disabled={selectQuestions.length <= 0}
+                            onClick={handleSaveQuestions}
+                            className="btn btn-primary btn-sm"
+                        >
                             <Save size={13} /> সংরক্ষণ
                         </button>
                     </div>

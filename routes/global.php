@@ -10,5 +10,6 @@ Route::middleware(['auth', 'hasNoRole', 'role:teacher'])->prefix('app')->group(f
         Route::post('/create-paper', 'store_paper')->name('g.create.new.questions.paper');
 
         Route::get('/load-questions/{id}', 'load_questions')->name('g.load.questions');
+        Route::post('/load-questions', 'add_paper_items')->name('g.load.questions.post');
     });
 });
