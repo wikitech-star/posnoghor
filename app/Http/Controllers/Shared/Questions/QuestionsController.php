@@ -191,4 +191,62 @@ class QuestionsController extends Controller
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }
     }
+
+    // all questions paper
+    public function all_papers(Request $request)
+    {
+
+        $classes = GroupClass::all();
+        $tree = $classes->map(function ($class) {
+            // Get subjects for this class
+            $subjects = Subject::where('class_id', $class->id)->get();
+
+            return [
+                'id' => $class->id,
+                'name' => $class->name,
+                'subjects' => $subjects->map(function ($subject) use ($class) {
+                    // Get lessons for this subject
+                    $lessons = Lassion::where('subject_id', $subject->id)->get();
+
+                    return [
+                        'id' => $subject->id,
+                        'name' => $subject->name,
+                        'lessons' => $lessons->map(function ($lesson) use ($class, $subject) {
+                            $papers = QuestionPaper::where('class_id', $class->id)
+                                ->whereJsonContains('subjects', (int)$subject->id)
+                                ->whereJsonContains('lession', (int)$lesson->id)
+                                ->get();
+
+                            return [
+                                'id' => $lesson->id,
+                                'name' => $lesson->name,
+                                'papers' => $papers->map(function ($paper) {
+                                    return [
+                                        'id' => $paper->id,
+                                        'name' => $paper->program_name,
+                                    ];
+                                }),
+                            ];
+                        }),
+                    ];
+                }),
+            ];
+        });
+
+        return Inertia::render('Shared/Questions/AllPapers', [
+            'tree' => $tree,
+        ]);
+    }
+
+    // delete question paper
+    public function delete_question_paper($id)
+    {
+        try {
+            QUestionPaperItems::where('question_paper_id', $id)->delete();
+            QuestionPaper::findOrFail($id)->delete();
+            return redirect()->back()->with('success', 'প্রশ্নপত্র সফলভাবে মুছে ফেলা হয়েছে।');
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
+        }
+    }
 }

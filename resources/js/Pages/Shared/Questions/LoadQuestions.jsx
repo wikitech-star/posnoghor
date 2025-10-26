@@ -57,7 +57,7 @@ export default function LoadQuestions({
     // notify if wan to leave with unsaved changes
     useEffect(() => {
         const handleBeforeUnload = (e) => {
-            if (selectQuestions.length > 0) {
+            if (needSave) {
                 e.preventDefault();
                 e.returnValue =
                     "আপনি নিশ্চিত যে আপনি এই পেজ ত্যাগ করতে চান? আপনার পরিবর্তনগুলি সংরক্ষিত নাও হতে পারে।";
@@ -68,7 +68,7 @@ export default function LoadQuestions({
         return () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
-    }, [selectQuestions]);
+    }, [needSave]);
 
     // handle save questions to paper
     const handleSaveQuestions = (e) => {

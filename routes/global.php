@@ -11,5 +11,8 @@ Route::middleware(['auth', 'hasNoRole', 'role:teacher'])->prefix('app')->group(f
 
         Route::get('/load-questions/{id}', 'load_questions')->name('g.load.questions');
         Route::post('/load-questions', 'add_paper_items')->name('g.load.questions.post');
+
+        Route::get('/all-questions-papper', 'all_papers')->name('g.all.questions.papper');
+        Route::get('/all-questions-papper/{id}', 'delete_question_paper')->name('g.all.questions.papper.delete');
     });
 });
