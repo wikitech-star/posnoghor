@@ -201,6 +201,7 @@ class QuestionsController extends Controller
                                     return [
                                         'id' => $paper->id,
                                         'name' => $paper->program_name,
+                                        'type' => $paper->type == 'all' ? 'একসাথে' : ($paper->type == 'cq' ? 'সৃজনশীল' : ($paper->type == 'mcq' ? 'বহুনির্বাচনী' : 'জ্ঞানমূলক'))
                                     ];
                                 }),
                             ];
@@ -213,6 +214,24 @@ class QuestionsController extends Controller
         return Inertia::render('Shared/Questions/AllPapers', [
             'tree' => $tree,
         ]);
+    }
+
+    // update paper item
+    public function updateQuestionPaper(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|min:3'
+        ]);
+
+        try {
+            $paper = QuestionPaper::findOrFail($request->id);
+            $paper->program_name = $request->title;
+            $paper->save();
+
+            return redirect()->back()->with('success', 'পরিবর্তন সফল হয়েছে');
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
+        }
     }
 
     // delete question paper
