@@ -34,7 +34,7 @@ export default function AllPapers({ tree }) {
                                                 {subject.lessons.map(
                                                     (lesson, i) => (
                                                         <li key={i}>
-                                                            <details open>
+                                                            <details>
                                                                 <summary>
                                                                     <Folder
                                                                         size={
@@ -70,7 +70,15 @@ export default function AllPapers({ tree }) {
                                                                                     </div>
 
                                                                                     <div className="flex items-center gap-1">
-                                                                                        <Link className="btn btn-xs btn-info">
+                                                                                        <Link
+                                                                                            href={route(
+                                                                                                "g.questions.papper.details",
+                                                                                                {
+                                                                                                    id: paper?.id,
+                                                                                                }
+                                                                                            )}
+                                                                                            className="btn btn-xs btn-info"
+                                                                                        >
                                                                                             <Eye
                                                                                                 size={
                                                                                                     12

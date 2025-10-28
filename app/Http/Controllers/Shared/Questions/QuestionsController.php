@@ -144,7 +144,7 @@ class QuestionsController extends Controller
             'data' => $paginated,
             'taqs' => $uniqueTaqs,
             'filters' => $query,
-            'old_added_questions' => QUestionPaperItems::where('question_paper_id', $id)->pluck('question_id')->toArray(),
+            'old_added_questions' => $paperData->questions,
         ]);
     }
 
@@ -156,35 +156,12 @@ class QuestionsController extends Controller
                 return redirect()->back()->with('error', 'সঠিক তথ্য প্রদান করুন।');
             }
 
-            $dataquery = Questions::whereIn('id', $request->data)
-                ->paginate(count((array)$request->data))
-                ->through(function ($q) {
-                    if ($q->type === 'mcq') {
-                        $q->setRelation('options', $q->mcqOptions);
-                    } elseif (in_array($q->type, ['cq', 'sq'])) {
-                        $q->setRelation('options', $q->cqsqOptions);
-                    }
-                    return $q;
-                });
-
-            // fresh before update
-            QUestionPaperItems::where('question_paper_id', $request->id)->delete();
-            foreach ($dataquery as $item) {
-                $q = new QUestionPaperItems();
-                $q->question_paper_id = $request->id;
-                $q->question_id = $item->id;
-                $q->type = $item->type;
-                if ($item->type == 'mcq') {
-                    $q->mcq_type = $item->mcq_type;
-                }
-                $q->body = $item->body;
-                if ($item->image) {
-                    $q->image = $item->image;
-                    $q->image_align = $item->image_align;
-                }
-                $q->options = json_encode($item->options);
-                $q->save();
+            $q = QuestionPaper::find($request->id);
+            if (!$q) {
+                return redirect()->back()->with('error', 'প্রশ্নপত্র খুঁজে পাওয়া যায়নি।');
             }
+            $q->questions = json_encode($request->data);
+            $q->save();
 
             return redirect()->back()->with('success', 'প্রশ্নপত্রে প্রশ্ন যোগ করা হয়েছে।');
         } catch (\Exception $th) {
@@ -242,11 +219,48 @@ class QuestionsController extends Controller
     public function delete_question_paper($id)
     {
         try {
-            QUestionPaperItems::where('question_paper_id', $id)->delete();
             QuestionPaper::findOrFail($id)->delete();
             return redirect()->back()->with('success', 'প্রশ্নপত্র সফলভাবে মুছে ফেলা হয়েছে।');
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }
+    }
+
+    // show paper details
+    public function show_paper_details($id)
+    {
+        $paperData =  QuestionPaper::findOrFail($id);
+
+        // classes
+        $class_name = GroupClass::where('id', $paperData->class_id)->value('name');
+        $subjects = Subject::whereIn('id', json_decode($paperData->subjects, true))
+            ->pluck('name')
+            ->toArray();
+        $lessons = Lassion::whereIn('id', json_decode($paperData->lession, true))
+            ->pluck('name')
+            ->toArray();
+
+        // questions
+        $ids = json_decode($paperData->questions, true);
+        $questions =  Questions::whereIn('id', $ids)
+            ->with(['group_class', 'subject', 'lession', 'topics'])
+            ->latest()
+            ->paginate(count($ids))
+            ->through(function ($q) {
+                if ($q->type === 'mcq') {
+                    $q->setRelation('options', $q->mcqOptions);
+                } elseif (in_array($q->type, ['cq', 'sq'])) {
+                    $q->setRelation('options', $q->cqsqOptions);
+                };
+                return $q;
+            });
+
+        return Inertia::render('Shared/Questions/PaperDetails', [
+            'paper_data' => $paperData,
+            'class_name' => $class_name,
+            'subjects' => $subjects,
+            'lessons' => $lessons,
+            'data' => $questions
+        ]);
     }
 }

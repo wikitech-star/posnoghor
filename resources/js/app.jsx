@@ -1,5 +1,6 @@
 import "./bootstrap";
 import "../css/app.css";
+import "react-quill-new/dist/quill.bubble.css";
 import { createInertiaApp } from "@inertiajs/react";
 import { createRoot } from "react-dom/client";
 import AuthLayout from "./Components/Layouts/AuthLayout";

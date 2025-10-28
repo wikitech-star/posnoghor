@@ -6,7 +6,7 @@ import Paginations from "../../../Components/Parts/Paginations";
 import Start from "../../../Components/Parts/Start";
 import { BANGLA_INDEX, ENGLISH_TO_BANGLA } from "../../../Utils/Helper";
 import { Eye, Save, X } from "lucide-react";
-import { router, useForm } from "@inertiajs/react";
+import { Link, router, useForm } from "@inertiajs/react";
 import toast from "react-hot-toast";
 
 export default function LoadQuestions({
@@ -100,7 +100,7 @@ export default function LoadQuestions({
             {/* all questions */}
             <div className="w-full md:w-[calc(100%-400px)] h-fit">
                 {/* header */}
-                <div className="flex items-center justify-between gap-3 bg-gray-50 p-3.5 rounded-box border border-gray-200">
+                <div className="flex items-center justify-between gap-3 bg-white p-3.5 rounded-box border border-gray-200">
                     <div className="flex items-center gap-2">
                         <span>
                             মোট প্রশ্ন:{" "}
@@ -114,12 +114,15 @@ export default function LoadQuestions({
                         </h1>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button
+                        <Link
+                            href={route("g.questions.papper.details", {
+                                id: paper_data?.id,
+                            })}
                             disabled={needSave}
                             className="btn btn-sm btn-soft"
                         >
                             <Eye size={13} /> প্রিভিউ
-                        </button>
+                        </Link>
                         <button
                             disabled={selectQuestions.length <= 0}
                             onClick={handleSaveQuestions}
@@ -140,7 +143,7 @@ export default function LoadQuestions({
                         <button
                             onClick={() => handleQuestionSelect(question.id)}
                             key={index}
-                            className={`p-4 border border-gray-300 rounded-box duration-300 hover:border-l-8 hover:border-r-8 ${
+                            className={`p-4 bg-white border border-gray-300 rounded-box duration-300 hover:border-l-8 hover:border-r-8 ${
                                 selectQuestions.includes(question.id)
                                     ? "hover:border-error"
                                     : "hover:border-primary"
@@ -281,7 +284,7 @@ export default function LoadQuestions({
 
             {/* filter */}
             <div className="w-full md:w-[400px] h-fit">
-                <div className="border border-gray-200 rounded-box p-4 mb-5">
+                <div className="border border-gray-200 bg-white rounded-box p-4 mb-3">
                     <Input
                         value={searchForm.data.search}
                         onChange={(e) =>
@@ -292,8 +295,8 @@ export default function LoadQuestions({
                     />
                 </div>
 
-                <div className="border border-gray-200 rounded-box mb-5">
-                    <div className="font-semibold flex items-center justify-between bg-gray-100 text-neutral px-3 py-2 text-sm rounded-t-box">
+                <div className="border border-gray-200 bg-white rounded-box mb-3">
+                    <div className="font-semibold flex items-center justify-between bg-primary/10 text-neutral px-3 py-2 text-sm rounded-t-box">
                         <span>টাইপ</span>
                         {searchForm.data.type.length > 0 && (
                             <button
@@ -362,8 +365,8 @@ export default function LoadQuestions({
                     </div>
                 </div>
 
-                <div className="border border-gray-200 rounded-box mb-5">
-                    <div className="font-semibold flex items-center justify-between bg-gray-100 text-neutral px-3 py-2 text-sm rounded-t-box">
+                <div className="border border-gray-200 bg-white rounded-box mb-3">
+                    <div className="font-semibold flex items-center justify-between bg-primary/10 text-neutral px-3 py-2 text-sm rounded-t-box">
                         <span>টাইপ</span>
                         {searchForm.data.taqs && (
                             <button

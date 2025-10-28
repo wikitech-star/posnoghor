@@ -19,7 +19,7 @@ export default function AuthLayout({ title, children }) {
                     setSidebarOpen={setSidebarOpen}
                 />
                 <div
-                    className={`w-full h-screen ${
+                    className={`w-full min-h-screen max-h-auto bg-gray-100 ${
                         sidebarOpen ? "md:ml-[300px]" : ""
                     } duration-300`}
                 >

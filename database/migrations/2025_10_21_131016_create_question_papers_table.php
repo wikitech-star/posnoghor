@@ -22,6 +22,7 @@ return new class extends Migration
             $table->json('subjects');
             $table->json('lession');
             $table->string('type');
+            $table->json('questions')->nullable();
             $table->timestamps();
         });
     }
