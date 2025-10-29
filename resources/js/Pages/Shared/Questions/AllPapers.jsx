@@ -30,7 +30,7 @@ export default function AllPapers({ tree }) {
 
     return (
         <div>
-            <div className="bg-primary text-neutral text-xl font-bold p-3 flex items-center justify-center gap-2 rounded-box">
+            <div className="bg-primary text-neutral text-lg font-bold px-3 py-2 flex items-center justify-center gap-2 rounded-box">
                 <Download size={20} />{" "}
                 <span>ক্লাউড থেকে প্রশ্নপত্র লোড করুন</span>
             </div>
