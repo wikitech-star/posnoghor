@@ -1,7 +1,13 @@
 import { Star } from "lucide-react";
 import React from "react";
 
-export default function Start({ start = 0, max = 5, hidden = true }) {
+export default function Start({
+    start = 0,
+    max = 5,
+    hidden = true,
+    size = 24,
+    iconSize = 13,
+}) {
     const visibleStars = hidden ? start : max;
 
     return (
@@ -9,9 +15,13 @@ export default function Start({ start = 0, max = 5, hidden = true }) {
             {Array.from({ length: visibleStars }).map((_, i) => (
                 <div
                     key={i}
-                    className="rounded-box w-6 h-6 flex justify-center items-center bg-neutral text-primary"
+                    style={{
+                        width: size + "px",
+                        height: size + "px",
+                    }}
+                    className="rounded-box flex justify-center items-center bg-neutral text-primary"
                 >
-                    <Star size={13} />
+                    <Star size={iconSize} />
                 </div>
             ))}
         </div>

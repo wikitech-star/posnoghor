@@ -58,7 +58,7 @@ function CustomToolbar({ quillRef, fontSize, setFontSize, position }) {
 
     return (
         <div
-            className="fixed z-50 flex items-center gap-2 bg-white shadow-md border border-gray-300 rounded-md px-2 py-1 animate-fadeIn"
+            className="fixed z-50 flex items-center gap-2 bg-white text-neutral shadow-md border border-gray-300 rounded-md px-2 py-1 animate-fadeIn"
             style={{
                 top: position.top - 45,
                 left: position.left - 150,
