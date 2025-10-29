@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\GlobalMialer;
 use App\Models\GoogleAuth;
 use App\Models\GroupClass;
+use App\Models\Institute;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -132,6 +133,12 @@ class AuthController extends Controller
             $user->role = $request->role;
             if ($request->role == 'student') {
                 $user->group_class_id = $request->groupCLassId;
+            }
+            if ($request->role == 'teacher') {
+                $in = new Institute();
+                $in->teacher_id = $user->id;
+                $in->name = $user->name;
+                $in->save();
             }
             if ($request->password) {
                 $user->password = bcrypt($request->password);

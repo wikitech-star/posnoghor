@@ -8,6 +8,7 @@ import {
     Download,
     Minus,
     Plus,
+    Shuffle,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import EditableText from "../../../Components/Parts/EditableText";
@@ -18,6 +19,7 @@ import {
     ENGLISH_DATE_TO_BANGLA,
     ENGLISH_TO_BANGLA,
 } from "../../../Utils/Helper";
+import { Link } from "@inertiajs/react";
 
 export default function PaperDetails({
     paper_data,
@@ -41,6 +43,7 @@ export default function PaperDetails({
 
     // style
     const [col, setCol] = useState(2);
+    const [mcqCol, setMcqCol] = useState(1);
     const [colDevider, setColDevider] = useState(true);
     const [optionStyle, setOptionStyle] = useState(2);
     const [fontSize, setFontSize] = useState(14);
@@ -68,6 +71,19 @@ export default function PaperDetails({
         setSqQuestions(sqs);
     }, [data]);
 
+    // suffule
+    const shuffleArray = (array) => {
+        return array
+            .map((item) => ({ item, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ item }) => item);
+    };
+    const shuffleHandle = () => {
+        setMcqQuestions(shuffleArray(mcqQuestions));
+        setCqQuestions(shuffleArray(cqQuestions));
+        setSqQuestions(shuffleArray(sqQuestions));
+    };
+
     // col devider
     const ColumnDividers = ({ col = 3, containerWidth = 800 }) => {
         const dividers = [];
@@ -76,10 +92,11 @@ export default function PaperDetails({
             dividers.push(
                 <div
                     key={i}
-                    className="absolute top-0 bottom-0 w-[0.1px] bg-gray-300"
+                    className="absolute z-40 top-0 bottom-0 w-px bg-gray-300 print:block"
                     style={{
-                        left: `${(100 / col) * i}%`, // use percentage instead of px — responsive layout
-                        transform: "translateX(-50%)", // perfectly center between columns
+                        left: `${(100 / col) * i}%`,
+                        transform: "translateX(-50%)",
+                        printColorAdjust: "exact",
                     }}
                 />
             );
@@ -91,7 +108,7 @@ export default function PaperDetails({
     return (
         <div className="flex gap-4 w-full justify-center text-[#000000]">
             {/* paper */}
-            <div className="bg-white w-[800px] h-fit shadow-xs rounded-box px-8 py-10 sticky top-[70px]">
+            <div className="bg-white w-[800px] h-fit shadow-xs print:shadow-none rounded-box px-8 py-10 print:p-0 sticky top-[70px]">
                 {/* heade */}
                 <div className="text-center mb-8 ">
                     {programShow && (
@@ -276,7 +293,7 @@ export default function PaperDetails({
                         col == 2 && "columns-2"
                     } ${
                         col == 3 && "columns-3"
-                    } flex-1 gap-5 overflow-hidden relative [&>*]:break-inside-avoid`}
+                    } flex-1 gap-5 overflow-hidden relative`}
                 >
                     {/* mcq */}
                     <div>
@@ -330,11 +347,17 @@ export default function PaperDetails({
                                                 content={val.body}
                                             />
                                         </div>
-                                        <div className="space-y-1">
+                                        <div
+                                            className={`grid gap-2 ${
+                                                mcqCol == 1 && "grid-cols-1"
+                                            } ${mcqCol == 2 && "grid-cols-2"} ${
+                                                mcqCol == 3 && "grid-cols-3"
+                                            }`}
+                                        >
                                             {val?.options.map((op, i) => (
                                                 <div
                                                     key={i}
-                                                    className={`flex gap-1 ml-6`}
+                                                    className={`flex gap-1 ml-7`}
                                                 >
                                                     <p
                                                         className={`${newFont} ${
@@ -432,7 +455,7 @@ export default function PaperDetails({
                                                     key={i}
                                                     className="flex justify-between"
                                                 >
-                                                    <div className="flex gap-1 ml-6">
+                                                    <div className="flex gap-1 ml-7">
                                                         <p
                                                             className={`${newFont} ${
                                                                 optionStyle == 1
@@ -577,11 +600,19 @@ export default function PaperDetails({
             </div>
 
             {/* settings */}
-            <div className="bg-white p-3 rounded-box h-fit shadow-xs min-w-[300px] max-h-screen overflow-y-auto">
-                <button className="btn btn-primary btn-sm w-full">
+            <div className="bg-white p-3 rounded-box h-fit shadow-xs min-w-[300px] max-h-screen overflow-y-auto print:hidden">
+                <Link
+                    href={route("g.load.questions", {
+                        id: paper_data?.id,
+                    })}
+                    className="btn btn-primary btn-sm w-full"
+                >
                     <Plus size={14} /> আরও প্রশ্ন যুক্ত করুন
-                </button>
-                <button className="btn bg-neutral text-white mt-1 btn-sm w-full">
+                </Link>
+                <button
+                    onClick={() => window.print()}
+                    className="btn bg-neutral text-white mt-1 btn-sm w-full"
+                >
                     <Download size={14} /> ডাউনলোড
                 </button>
 
@@ -763,37 +794,75 @@ export default function PaperDetails({
                 <div className="bg-primary/30 rounded-box border-t border-primary py-2 px-3 mt-3 text-sm text-center font-semibold my-1">
                     কলাম
                 </div>
-                <div className="grid grid-cols-3 gap-2 mt-1">
-                    <button
-                        onClick={() => setCol(1)}
-                        className={`btn w-full btn-sm border ${
-                            col == 1
-                                ? "border-primary text-primary"
-                                : "border-gray-200 text-gray-500"
-                        }`}
-                    >
-                        <CircleSlash2 size={14} />
-                    </button>
-                    <button
-                        onClick={() => setCol(2)}
-                        className={`btn w-full btn-sm border ${
-                            col == 2
-                                ? "border-primary text-primary"
-                                : "border-gray-200 text-gray-500"
-                        }`}
-                    >
-                        <Columns2 size={14} />
-                    </button>
-                    <button
-                        onClick={() => setCol(3)}
-                        className={`btn w-full btn-sm border ${
-                            col == 3
-                                ? "border-primary text-primary"
-                                : "border-gray-200 text-gray-500"
-                        }`}
-                    >
-                        <Columns3 size={14} />
-                    </button>
+                <div className="bg-gray-200 rounded-box py-2.5 px-3 text-sm font-semibold mt-1">
+                    <p>প্রশ্নের কলাম</p>
+                    <div className="grid grid-cols-3 gap-1 mt-1">
+                        <button
+                            onClick={() => setCol(1)}
+                            className={`btn w-full btn-sm border ${
+                                col == 1
+                                    ? "border-primary text-primary"
+                                    : "border-gray-300 text-gray-500"
+                            }`}
+                        >
+                            <CircleSlash2 size={14} />
+                        </button>
+                        <button
+                            onClick={() => setCol(2)}
+                            className={`btn w-full btn-sm border ${
+                                col == 2
+                                    ? "border-primary text-primary"
+                                    : "border-gray-300 text-gray-500"
+                            }`}
+                        >
+                            <Columns2 size={14} />
+                        </button>
+                        <button
+                            onClick={() => setCol(3)}
+                            className={`btn w-full btn-sm border ${
+                                col == 3
+                                    ? "border-primary text-primary"
+                                    : "border-gray-300 text-gray-500"
+                            }`}
+                        >
+                            <Columns3 size={14} />
+                        </button>
+                    </div>
+                </div>
+                <div className="bg-gray-200 rounded-box py-2.5 px-3 text-sm font-semibold mt-1">
+                    <p>বহুনির্বাচনি কলাম</p>
+                    <div className="grid grid-cols-3 gap-1 mt-1">
+                        <button
+                            onClick={() => setMcqCol(1)}
+                            className={`btn w-full btn-sm border ${
+                                mcqCol == 1
+                                    ? "border-primary text-primary"
+                                    : "border-gray-300 text-gray-500"
+                            }`}
+                        >
+                            <CircleSlash2 size={14} />
+                        </button>
+                        <button
+                            onClick={() => setMcqCol(2)}
+                            className={`btn w-full btn-sm border ${
+                                mcqCol == 2
+                                    ? "border-primary text-primary"
+                                    : "border-gray-300 text-gray-500"
+                            }`}
+                        >
+                            <Columns2 size={14} />
+                        </button>
+                        <button
+                            onClick={() => setMcqCol(3)}
+                            className={`btn w-full btn-sm border ${
+                                mcqCol == 3
+                                    ? "border-primary text-primary"
+                                    : "border-gray-300 text-gray-500"
+                            }`}
+                        >
+                            <Columns3 size={14} />
+                        </button>
+                    </div>
                 </div>
                 <div className="bg-gray-200 mt-1 rounded-box py-2.5 px-3 text-sm text-center font-semibold flex items-center justify-between">
                     <p>কলাম ডিভাইডার</p>
@@ -803,6 +872,20 @@ export default function PaperDetails({
                         onChange={(e) => setColDevider(e.target.checked)}
                         className="toggle"
                     />
+                </div>
+
+                {/* heling tools */}
+                <div className="bg-primary/30 rounded-box border-t border-primary py-2 px-3 mt-3 text-sm text-center font-semibold my-1">
+                    সহায়ক টুলস
+                </div>
+                <div className="bg-gray-200 mt-1 rounded-box py-2.5 px-3 text-sm text-center font-semibold flex items-center justify-between">
+                    <p>শাফল (সেট কোড তৈরী)</p>
+                    <button
+                        onClick={shuffleHandle}
+                        className="btn btn-xs btn-primary"
+                    >
+                        <Shuffle size={13} />
+                    </button>
                 </div>
 
                 {/* branding */}

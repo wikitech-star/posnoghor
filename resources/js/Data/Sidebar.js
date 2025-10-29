@@ -9,6 +9,7 @@ import {
     MailWarning,
     Menu,
     Plus,
+    School,
     Settings,
     University,
 } from "lucide-react";
@@ -139,6 +140,19 @@ const ADMIN_SIDEBAR = [
         link: route("g.all.questions.papper"),
         active: ["g.all.questions.papper"],
         role: ["teacher", "admin", "editor"],
+        pro: false,
+    },
+    {
+        title: "প্রতিষ্ঠান সংক্রান্ত",
+        isTitle: true,
+        role: ["teacher"],
+    },
+    {
+        name: "আমার প্রতিষ্ঠান",
+        icon: School,
+        link: route("tech.institute.index"),
+        active: ["tech.institute.index"],
+        role: ["teacher"],
         pro: false,
     },
 ];

@@ -1,10 +1,20 @@
-import { usePage } from "@inertiajs/react";
-import React, { useEffect } from "react";
+import { useForm, usePage } from "@inertiajs/react";
+import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Header from "../Parts/Header";
+import Model from "../Parts/Model";
+import Input from "../Parts/Input";
+import Textarea from "../Parts/Textarea";
 
 export default function Global({ title, children }) {
-    const { flash, auth, appName, appurl } = usePage().props;
+    const { flash, auth, appName, appurl, institute } = usePage().props;
+
+    const [model, setModel] = useState(false);
+    useEffect(() => {
+        if (auth?.role == "teacher" && !institute) {
+            setModel(true);
+        }
+    }, []);
 
     // for flash message
     useEffect(() => {
@@ -65,11 +75,92 @@ export default function Global({ title, children }) {
         };
     }, []);
 
+    // ADDRESS
+    const addressForm = useForm({
+        name: "",
+        devision: "",
+        zila: "",
+        upozila: "",
+        phone: "",
+        address: "",
+    });
+    const handleform = (e) => {
+        e.preventDefault();
+        addressForm.post(route("tech.institute.post"), {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                addressForm.reset();
+                setModel(false);
+            },
+        });
+    };
+
     return (
         <div className="w-full">
             <Header title={title} />
             <div className="max-h-screen">{children}</div>
             <Toaster position="top-center" reverseOrder={false} />
+
+            {/* institute */}
+            <Model title="প্রতিষ্ঠানের নাম" model={model} setModel={setModel}>
+                <div className="space-y-1">
+                    <Input
+                        value={addressForm.data.name}
+                        onChange={(e) =>
+                            addressForm.setData("name", e.target.value)
+                        }
+                        label="প্রতিষ্ঠানের নাম"
+                        error={addressForm.errors.name}
+                    />
+                    <Input
+                        value={addressForm.data.devision}
+                        onChange={(e) =>
+                            addressForm.setData("devision", e.target.value)
+                        }
+                        label="বিভাগ*"
+                        error={addressForm.errors.devision}
+                    />
+                    <Input
+                        value={addressForm.data.zila}
+                        onChange={(e) =>
+                            addressForm.setData("zila", e.target.value)
+                        }
+                        label="জেলা*"
+                        error={addressForm.errors.zila}
+                    />
+                    <Input
+                        value={addressForm.data.upozila}
+                        onChange={(e) =>
+                            addressForm.setData("upozila", e.target.value)
+                        }
+                        label="উপজেলা*"
+                        error={addressForm.errors.upozila}
+                    />
+                    <Input
+                        value={addressForm.data.phone}
+                        onChange={(e) =>
+                            addressForm.setData("phone", e.target.value)
+                        }
+                        label="ফোন"
+                        error={addressForm.errors.phone}
+                    />
+                    <Textarea
+                        value={addressForm.data.address}
+                        onChange={(e) =>
+                            addressForm.setData("address", e.target.value)
+                        }
+                        placeholder="নির্দিষ্ট ঠিকানা লিখুন (যদি থাকে) । এখানে জেলা বা উপজেলা লিখবেন না ।"
+                    />
+                    <button
+                        onClick={handleform}
+                        disabled={addressForm.processing}
+                        className="btn btn-sm btn-primary w-full"
+                    >
+                        সেভ করুন
+                    </button>
+                </div>
+            </Model>
         </div>
     );
 }

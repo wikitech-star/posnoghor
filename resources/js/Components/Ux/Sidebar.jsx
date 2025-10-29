@@ -8,7 +8,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
     return (
         <div
-            className={`h-screen w-[300px] bg-neutral fixed top-0 z-100 overflow-y-auto duration-300 ${
+            className={`h-screen w-[300px] bg-neutral fixed top-0 z-100 overflow-y-auto duration-300 print:hidden ${
                 sidebarOpen ? "left-0" : "-left-full"
             }`}
         >

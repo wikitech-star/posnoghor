@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Institute;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +48,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'currentRoute' => Route::currentRouteName(),
             'siteSettings' => SiteSetting::first(),
-            'appurl' => env('APP_URL')
+            'appurl' => env('APP_URL'),
+            'institute' => Institute::where('teacher_id', Auth::id())->first()
+
         ]);
     }
 }
