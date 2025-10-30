@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Institute;
+use App\Models\InstitutNameRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -52,6 +53,33 @@ class InstituteController extends Controller
 
 
             return redirect()->back()->with('success', 'প্রতিষ্ঠান সফল্ভাবে যুক্ত হয়েছে।');
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
+        }
+    }
+
+    // name request
+    public function name_request(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|min:5'
+        ], [
+            'name.required' => 'প্রতিষ্ঠানের নাম প্রদান করুন।',
+            'name.min' => 'নাম সর্বনিম্ন ৫ সংখ্যার হতে হবে'
+        ]);
+
+        try {
+            $requested = InstitutNameRequest::where('teacher_id', Auth::id())->exists();
+            if ($requested) {
+                return redirect()->back()->with('error', 'প্রতিষ্ঠানের নাম এর জন্য আবেদন করা আছে, আপনি এডমিন এর সাথে যোগাযোগ করুন');
+            }
+
+            $q = new InstitutNameRequest();
+            $q->teacher_id = Auth::id();
+            $q->name = $request->name;
+            $q->save();
+
+            return redirect()->back()->with('success', 'প্রতিষ্ঠান নাম পরিবর্তন আবেদন সফল হয়েছে।');
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
         }
