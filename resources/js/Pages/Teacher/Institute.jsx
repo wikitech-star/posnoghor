@@ -80,7 +80,7 @@ export default function Institute() {
                         <p className="text-sm text-gray-600 font-normal">
                             {auth?.email}
                         </p>
-                        {institute.teacher_id == auth.id && (
+                        {institute?.teacher_id == auth.id && (
                             <div className="badge badge-warning mt-2">
                                 মালিক
                             </div>
