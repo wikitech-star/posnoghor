@@ -32,6 +32,23 @@ export default function Institute() {
         });
     };
 
+    // name chnage request
+    const [nameChangeModel, setNameChangeModel] = useState(false);
+    const nameForm = useForm({
+        name: "",
+    });
+    const handleNameRequest = (e) => {
+        e.preventDefault();
+        nameForm.post(route("tech.institute.name.request"), {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                nameForm.reset();
+                setNameChangeModel(false);
+            },
+        });
+    };
+
     return (
         <>
             <div>
@@ -117,20 +134,47 @@ export default function Institute() {
                             </tbody>
                         </table>
                     </div>
+
+                    <div className="card bg-white flex flex-row py-8 items-center justify-between p-4 border border-gray-200 shadow-base col-span-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-primary/20">
+                                <Edit size={16} />
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold text-neutral">
+                                    প্রতিষ্ঠানের নাম পরিবর্তন করা প্রয়োজন?
+                                </h1>
+                                <p className="text-sm font-normal text-gray-600">
+                                    বাটনে ক্লিক করে নাম পরিবর্তনের ফর্ম সাবমিট
+                                    করুন।
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <button
+                                onClick={() => setNameChangeModel(true)}
+                                className="btn btn-primary btn-sm"
+                            >
+                                নাম পরিবর্তন করুন
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* institute */}
             <Model title="প্রতিষ্ঠানের নাম" model={model} setModel={setModel}>
                 <div className="space-y-1">
-                    <Input
-                        value={addressForm.data.name}
-                        onChange={(e) =>
-                            addressForm.setData("name", e.target.value)
-                        }
-                        label="প্রতিষ্ঠানের নাম"
-                        error={addressForm.errors.name}
-                    />
+                    {!institute?.id && (
+                        <Input
+                            value={addressForm.data.name}
+                            onChange={(e) =>
+                                addressForm.setData("name", e.target.value)
+                            }
+                            label="প্রতিষ্ঠানের নাম"
+                            error={addressForm.errors.name}
+                        />
+                    )}
                     <Input
                         value={addressForm.data.devision}
                         onChange={(e) =>
@@ -178,6 +222,43 @@ export default function Institute() {
                         সেভ করুন
                     </button>
                 </div>
+            </Model>
+
+            {/* institute name chnage  */}
+            <Model
+                title="প্রতিষ্ঠানের নাম পরিবর্তন ফর্ম"
+                model={nameChangeModel}
+                setModel={setNameChangeModel}
+                modelClassName="max-w-[400px]"
+            >
+                <div className="mb-3">
+                    <h1 className="text-lg text-error font-semibold">
+                        শর্তাবলী
+                    </h1>
+                    <p className="text-sm font-normal text-gray-800 mt-2 mb-1">
+                        ১। নামটি অবশ্যই প্রাতিষ্ঠানিক নাম হতে হবে। নিউট্রাল কোন
+                        নাম এপ্রুভ হবে না (যেমন - অধ্যায়ভিত্তিক পরীক্ষা, টিউটর,
+                        সাপ্তাহিক পরীক্ষা, মুল্যায়ন ইত্যাদি)
+                    </p>
+                    <p className="text-sm font-normal text-gray-800">
+                        ২। নাম পরিবর্তনের ৩০ দিনের মধ্যে নতুন করে পরিবর্তন করতে
+                        পারবেন না
+                    </p>
+                </div>
+
+                <Input
+                    label="নতুন নাম"
+                    value={nameForm.data.name}
+                    error={nameForm.errors.name}
+                    onChange={(e) => nameForm.setData("name", e.target.value)}
+                />
+                <button
+                    onClick={handleNameRequest}
+                    disabled={nameForm.processing}
+                    className="btn btn-primary btn-sm mt-2 w-full"
+                >
+                    সাবমিট করুন
+                </button>
             </Model>
         </>
     );
