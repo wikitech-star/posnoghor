@@ -13,9 +13,7 @@ class InstituteController extends Controller
     // index
     public function index()
     {
-        return Inertia::render('Teacher/Institute', [
-            'data' => Institute::where('teacher_id', Auth::id())->first()
-        ]);
+        return Inertia::render('Teacher/Institute');
     }
 
     // store
@@ -39,9 +37,10 @@ class InstituteController extends Controller
         ]);
 
         try {
-            Institute::firstOrCreate(
-                ['teacher_id' => Auth::id()],
-                [
+
+            Institute::updateOrCreate(
+                ['teacher_id' => Auth::id()], // শর্ত
+                [ // আপডেট বা তৈরি করার ডেটা
                     'name' => $request->name,
                     'devision' => $request->devision,
                     'zila' => $request->zila,
@@ -50,6 +49,7 @@ class InstituteController extends Controller
                     'address' => $request->address,
                 ]
             );
+
 
             return redirect()->back()->with('success', 'প্রতিষ্ঠান সফল্ভাবে যুক্ত হয়েছে।');
         } catch (\Exception $th) {

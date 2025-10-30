@@ -30,10 +30,10 @@ export default function PaperDetails({
     data,
     school,
 }) {
-    const { institute, auth } = usePage().props;
+    const { institute, auth, appName } = usePage().props;
 
     // font
-    const [newFont, setNewFont] = useState("font-base");
+    const [newFont, setNewFont] = useState("font-tiro");
 
     // first
     const [studentDetails, setStudentDetails] = useState(false);
@@ -165,7 +165,20 @@ export default function PaperDetails({
                     className="text-center mb-1 py-2 relative"
                     style={{ backgroundColor: setBgColor, color: setTextColor }}
                 >
-                    <h1 className="text-xl font-bold">{school}</h1>
+                    {auth.role == "admin" || auth.role == "editor" ? (
+                        <EditableText
+                            defaultStyle={{
+                                textAlign: "center",
+                            }}
+                            className={`${newFont} text-xl font-bold`}
+                            value={appName}
+                        />
+                    ) : (
+                        <h1 className={`text-xl font-bold ${newFont}`}>
+                            {school}
+                        </h1>
+                    )}
+
                     {address && (
                         <h1 className={`${newFont} text-base font-normal`}>
                             {addressText}

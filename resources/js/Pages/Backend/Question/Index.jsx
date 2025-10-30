@@ -295,13 +295,13 @@ export default function Index({
                                     </td>
                                     <td>
                                         <>
-                                            <p className="text-xs font-normal text-neutral">
+                                            <p className="font-normal text-neutral">
                                                 {item?.created_by?.name}
                                             </p>
-                                            <p className="text-xs font-normal text-neutral">
+                                            <p className="font-normal text-neutral">
                                                 {item?.created_by?.email}
                                             </p>
-                                            <p className="text-xs font-normal text-gray-500">
+                                            <p className="font-normal text text-neutral">
                                                 {ENGLISH_DATE_TO_BANGLA(
                                                     item.created_at
                                                 )}
@@ -310,13 +310,13 @@ export default function Index({
                                     </td>
                                     <td>
                                         <>
-                                            <p className="text-xs font-normal text-neutral">
+                                            <p className="font-normal text-neutral">
                                                 {item?.updated_by?.name}
                                             </p>
-                                            <p className="text-xs font-normal text-neutral">
+                                            <p className="font-normal text-neutral">
                                                 {item?.updated_by?.email}
                                             </p>
-                                            <p className="text-xs font-normal text-gray-500">
+                                            <p className="font-normal text-neutral">
                                                 {ENGLISH_DATE_TO_BANGLA(
                                                     item.updated_at
                                                 )}

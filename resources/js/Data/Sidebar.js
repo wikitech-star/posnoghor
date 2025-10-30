@@ -8,7 +8,6 @@ import {
     Home,
     Key,
     MailWarning,
-    Menu,
     Plus,
     School,
     Settings,
@@ -92,6 +91,27 @@ const ADMIN_SIDEBAR = [
         pro: false,
     },
     {
+        title: "ব্যবস্থাপনা",
+        isTitle: true,
+        role: ["admin", "editor"],
+    },
+    {
+        name: "১ ক্লিকে প্রশ্ন তৈরী",
+        icon: Plus,
+        link: route("g.create.new.questions"),
+        active: ["g.create.new.questions", "g.load.questions"],
+        role: ["admin", "editor"],
+        pro: false,
+    },
+    {
+        name: "আমার তৈরী প্রশ্নপত্র",
+        icon: FileQuestion,
+        link: route("g.all.questions.papper"),
+        active: ["g.all.questions.papper", "g.questions.papper.details"],
+        role: ["admin", "editor"],
+        pro: false,
+    },
+    {
         title: "সেটিংস",
         isTitle: true,
         role: ["admin"],
@@ -121,19 +141,19 @@ const ADMIN_SIDEBAR = [
         pro: false,
     },
 
-    // for teahcer
+    // for teahcer ================================
     {
         name: "১ ক্লিকে প্রশ্ন তৈরী",
         icon: Plus,
         link: route("g.create.new.questions"),
         active: ["g.create.new.questions", "g.load.questions"],
-        role: ["teacher", "admin", "editor"],
+        role: ["teacher"],
         pro: false,
     },
     {
         title: "ব্যবস্থাপনা",
         isTitle: true,
-        role: ["teacher", "admin", "editor"],
+        role: ["teacher"],
     },
     {
         name: "আমার তৈরী প্রশ্নপত্র",

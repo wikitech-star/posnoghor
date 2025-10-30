@@ -12,36 +12,52 @@ function ENGLISH_TO_BANGLA(number) {
 }
 
 // english date to bangla date
-function ENGLISH_DATE_TO_BANGLA(dateString) {
+function ENGLISH_DATE_TO_BANGLA(dateString, fulldate = false) {
     if (!dateString) return "";
 
     const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-    const banglaMonths = {
-        Jan: "জানু",
-        Feb: "ফেব",
-        Mar: "মার্চ",
-        Apr: "এপ্রিল",
-        May: "মে",
-        Jun: "জুন",
-        Jul: "জুলাই",
-        Aug: "আগ",
-        Sep: "সেপ্টে",
-        Oct: "অক্টো",
-        Nov: "নভে",
-        Dec: "ডিসে",
-    };
+    const banglaMonthsFull = [
+        "জানুয়ারি",
+        "ফেব্রুয়ারি",
+        "মার্চ",
+        "এপ্রিল",
+        "মে",
+        "জুন",
+        "জুলাই",
+        "আগস্ট",
+        "সেপ্টেম্বর",
+        "অক্টোবর",
+        "নভেম্বর",
+        "ডিসেম্বর",
+    ];
 
-    return dateString
-        .toString()
-        .split("")
-        .map((char) =>
-            /\d/.test(char) ? banglaDigits[parseInt(char, 10)] : char
-        )
-        .join("")
-        .replace(
-            /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g,
-            (m) => banglaMonths[m]
-        );
+    try {
+        // Laravel timestamp format handle করা
+        const date = new Date(dateString);
+        if (isNaN(date)) return "";
+
+        const day = date.getDate();
+        const month = banglaMonthsFull[date.getMonth()];
+        const year = date.getFullYear();
+
+        // Time চাইলে (fulldate = true)
+        let formatted = `${day} ${month} ${year}`;
+        if (fulldate) {
+            const hours = date.getHours().toString().padStart(2, "0");
+            const minutes = date.getMinutes().toString().padStart(2, "0");
+            formatted += `, ${hours}:${minutes}`;
+        }
+
+        // সংখ্যাগুলো বাংলায় রূপান্তর করা
+        return formatted
+            .split("")
+            .map((char) =>
+                /\d/.test(char) ? banglaDigits[parseInt(char, 10)] : char
+            )
+            .join("");
+    } catch (e) {
+        return "";
+    }
 }
 
 function BANGLA_INDEX(index) {

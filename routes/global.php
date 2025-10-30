@@ -3,7 +3,7 @@
 use App\Http\Controllers\Shared\Questions\QuestionsController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'hasNoRole', 'role:teacher'])->prefix('app')->group(function () {
+Route::middleware(['auth', 'hasNoRole', 'role:teacher,admin'])->prefix('app')->group(function () {
     // questions
     Route::controller(QuestionsController::class)->group(function () {
         Route::get('/create-new-paper', 'index')->name('g.create.new.questions');

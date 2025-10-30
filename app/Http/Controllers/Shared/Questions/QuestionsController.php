@@ -8,7 +8,6 @@ use App\Models\Institute;
 use App\Models\Lassion;
 use App\Models\Subject;
 use App\Models\QuestionPaper;
-use App\Models\QUestionPaperItems;
 use App\Models\Questions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -193,6 +192,7 @@ class QuestionsController extends Controller
                             $papers = QuestionPaper::where('class_id', $class->id)
                                 ->whereJsonContains('subjects', (int)$subject->id)
                                 ->whereJsonContains('lession', (int)$lesson->id)
+                                ->where('created_id', Auth::id())
                                 ->get();
 
                             return [
