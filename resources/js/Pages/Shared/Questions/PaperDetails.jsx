@@ -28,6 +28,7 @@ export default function PaperDetails({
     subjects,
     lessons,
     data,
+    school,
 }) {
     const { institute, auth } = usePage().props;
 
@@ -93,7 +94,7 @@ export default function PaperDetails({
     const [setBgColor, setSetBgColor] = useState("#ffffff");
     const [setTextColor, setSetTextColor] = useState("#000000");
     useEffect(() => {
-        if (!set) {
+        if (!set || !setBg) {
             setSetInstrcutorName(false);
             setSetInstrcutorNameProfile(false);
             setSetLectureNo(false);
@@ -103,7 +104,7 @@ export default function PaperDetails({
             setSetBgColor("#ffffff");
             setSetTextColor("#000000");
         }
-    }, [set]);
+    }, [set, setBg]);
 
     // data
     const [mcqQuestions, setMcqQuestions] = useState([]);
@@ -164,6 +165,7 @@ export default function PaperDetails({
                     className="text-center mb-1 py-2 relative"
                     style={{ backgroundColor: setBgColor, color: setTextColor }}
                 >
+                    <h1 className="text-xl font-bold">{school}</h1>
                     {address && (
                         <h1 className={`${newFont} text-base font-normal`}>
                             {addressText}
