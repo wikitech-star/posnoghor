@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Shared\Questions;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupClass;
+use App\Models\Institute;
 use App\Models\Lassion;
 use App\Models\Subject;
 use App\Models\QuestionPaper;
@@ -274,12 +275,16 @@ class QuestionsController extends Controller
                 return $q;
             });
 
+        // scholl
+        $school = Institute::where('teacher_id', Auth::id())->pluck('name')->first();
+
         return Inertia::render('Shared/Questions/PaperDetails', [
             'paper_data' => $paperData,
             'class_name' => $class_name,
             'subjects' => $subjects,
             'lessons' => $lessons,
-            'data' => $questions
+            'data' => $questions,
+            'school' => $school
         ]);
     }
 }
