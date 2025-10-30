@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ENGLISH_DATE_TO_BANGLA } from "../../Utils/Helper";
 import { useForm, usePage } from "@inertiajs/react";
 import Image from "../../Components/Parts/Image";
 import Model from "../../Components/Parts/Model";
 import Input from "../../Components/Parts/Input";
 import Textarea from "../../Components/Parts/Textarea";
-import { Edit } from "lucide-react";
+import Header from "../../Components/Parts/Header";
+import { Edit, X } from "lucide-react";
 
 export default function Institute() {
     const { institute, auth } = usePage().props;
+
+    // avility for chnage institite name
+    const [canRequestName, setCanRequestName] = useState(false);
+    useEffect(() => {
+        if (institute) {
+            const updatedAt = new Date(institute.updated_at);
+            const today = new Date();
+            const diffTime = today - updatedAt;
+            const diffDays = diffTime / (1000 * 60 * 60 * 24);
+            if (diffDays <= 30) {
+                setCanRequestName(false);
+            } else {
+                setCanRequestName(true);
+            }
+        }
+    }, [institute]);
 
     // ADDRESS
     const [model, setModel] = useState(false);
@@ -246,20 +263,35 @@ export default function Institute() {
                     </p>
                 </div>
 
-                <Input
-                    label="নতুন নাম"
-                    value={nameForm.data.name}
-                    error={nameForm.errors.name}
-                    onChange={(e) => nameForm.setData("name", e.target.value)}
-                />
-                <button
-                    onClick={handleNameRequest}
-                    disabled={nameForm.processing}
-                    className="btn btn-primary btn-sm mt-2 w-full"
-                >
-                    সাবমিট করুন
-                </button>
+                {canRequestName ? (
+                    <>
+                        <Input
+                            label="নতুন নাম"
+                            value={nameForm.data.name}
+                            error={nameForm.errors.name}
+                            onChange={(e) =>
+                                nameForm.setData("name", e.target.value)
+                            }
+                        />
+                        <button
+                            onClick={handleNameRequest}
+                            disabled={nameForm.processing}
+                            className="btn btn-primary btn-sm mt-2 w-full"
+                        >
+                            সাবমিট করুন
+                        </button>
+                    </>
+                ) : (
+                    <div className="border border-dashed border-neutral px-4 py-5 rounded-box flex flex-col items-center justify-center">
+                        <div className="w-8 h-8 rounded-full text-error bg-error/20 flex items-center justify-center">
+                            <X size={14}/>
+                        </div>
+                        <p className="mt-3 text-center text-sm text-neutral">৩০ দিনের মধ্যে আপনার প্রতিষ্ঠানের নাম পরিবর্তন হয়েছে। আপনার যদি পরিবর্তন করতে হয়ছে সরাসরি এডমিন এর সাথে যোগাযোগ করুন</p>
+                    </div>
+                )}
             </Model>
+
+            <Header title="প্রতিষ্ঠান" />
         </>
     );
 }

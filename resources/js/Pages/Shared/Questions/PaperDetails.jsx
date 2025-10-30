@@ -15,6 +15,7 @@ import EditableText from "../../../Components/Parts/EditableText";
 import Select from "../../../Components/Parts/Select";
 import LatexPreview from "../../../Components/Parts/LatexPreview";
 import Start from "../../../Components/Parts/Start";
+import Header from "../../../Components/Parts/Header";
 import {
     BANGLA_INDEX,
     ENGLISH_DATE_TO_BANGLA,
@@ -1400,6 +1401,8 @@ export default function PaperDetails({
                     </div>
                 )}
             </div>
+
+            <Header title={paper_data?.program_name || "প্রশ্ন পত্র"} />
         </div>
     );
 }

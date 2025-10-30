@@ -15,22 +15,20 @@ import {
 } from "lucide-react";
 
 const ADMIN_SIDEBAR = [
-    // for all
+    // for admin =============
     {
         title: "সার্বিক চিত্র",
         isTitle: true,
-        role: ["admin", "editor", "support", "teacher"],
+        role: ["admin", "editor", "support"],
     },
     {
         name: "ড্যাশবোর্ড",
         icon: Home,
         link: route("ux.dashboard"),
         active: ["ux.dashboard"],
-        role: ["admin", "editor", "support", "teacher"],
+        role: ["admin", "editor", "support"],
         pro: false,
     },
-
-    // for amin
     {
         title: "স্কুল",
         isTitle: true,
@@ -109,6 +107,19 @@ const ADMIN_SIDEBAR = [
         link: route("g.all.questions.papper"),
         active: ["g.all.questions.papper", "g.questions.papper.details"],
         role: ["admin", "editor"],
+        pro: false,
+    },
+    {
+        title: "আবেদন",
+        isTitle: true,
+        role: ["admin"],
+    },
+    {
+        name: "প্রতিষ্ঠানের নাম",
+        icon: School,
+        link: route("ux.institute.name.request"),
+        active: ["ux.institute.name.request"],
+        role: ["admin"],
         pro: false,
     },
     {

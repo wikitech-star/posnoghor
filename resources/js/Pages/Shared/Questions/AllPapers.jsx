@@ -2,6 +2,7 @@ import { Link, useForm } from "@inertiajs/react";
 import { Download, Eye, Folder, Pen, Trash } from "lucide-react";
 import Model from "../../../Components/Parts/Model";
 import Input from "../../../Components/Parts/Input";
+import Header from "../../../Components/Parts/Header";
 import React, { useState } from "react";
 
 export default function AllPapers({ tree }) {
@@ -217,6 +218,8 @@ export default function AllPapers({ tree }) {
                     </Link>
                 </div>
             </Model>
+
+            <Header title="সকল প্রশ্ন পত্র" />
         </div>
     );
 }

@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Backend\InstituteRequestController;
 use App\Http\Controllers\Backend\Question\QuestionController;
 use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
@@ -50,6 +52,13 @@ Route::middleware(['auth', 'hasNoRole', 'role:admin'])->prefix('app')->group(fun
 
         Route::get('/add', 'add_view')->name('ux.question.add');
         Route::post('/add', 'store')->name('ux.question.post');
+    });
+
+    // institute
+    Route::controller(InstituteRequestController::class)->group(function () {
+        Route::get('/institute-name-request', 'index')->name('ux.institute.name.request');
+        Route::get('/institute-name-request/{id}', 'accept')->name('ux.institute.name.request.accept');
+        Route::get('/institute-name-request/del/{id}', 'delete')->name('ux.institute.name.request.del');
     });
 
     // setting routes
