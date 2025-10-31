@@ -17,6 +17,9 @@ class Guest
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
+            if (Auth::user()->role == 'teacher') {
+                return to_route('tech.dashboard');
+            }
             return to_route('ux.dashboard');
         }
 

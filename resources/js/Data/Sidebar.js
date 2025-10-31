@@ -19,14 +19,14 @@ const ADMIN_SIDEBAR = [
     {
         title: "সার্বিক চিত্র",
         isTitle: true,
-        role: ["admin", "editor", "support"],
+        role: ["admin"],
     },
     {
         name: "ড্যাশবোর্ড",
         icon: Home,
         link: route("ux.dashboard"),
         active: ["ux.dashboard"],
-        role: ["admin", "editor", "support"],
+        role: ["admin"],
         pro: false,
     },
     {
@@ -153,6 +153,19 @@ const ADMIN_SIDEBAR = [
     },
 
     // for teahcer ================================
+    {
+        title: "সার্বিক চিত্র",
+        isTitle: true,
+        role: ["teacher"],
+    },
+    {
+        name: "ড্যাশবোর্ড",
+        icon: Home,
+        link: route("tech.dashboard"),
+        active: ["tech.dashboard"],
+        role: ["teacher"],
+        pro: false,
+    },
     {
         name: "১ ক্লিকে প্রশ্ন তৈরী",
         icon: Plus,

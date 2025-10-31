@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Shared\Questions\QuestionsController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,7 @@ Route::middleware(['auth', 'hasNoRole', 'role:teacher,admin'])->prefix('app')->g
         Route::get('/questions-papper-details/{id}', 'show_paper_details')->name('g.questions.papper.details');
     });
 });
+
+
+// single routes
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');

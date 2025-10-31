@@ -1,15 +1,10 @@
 <?php
 
-use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Ui\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware(['isMaintance'])->group(function () {
-    // public routes
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-
     // guest auth routes
     Route::middleware('guest')->controller(AuthController::class)->prefix('auth')->group(function () {
         Route::get('/login', 'login')->name('login');
@@ -34,18 +29,13 @@ Route::middleware(['isMaintance'])->group(function () {
     });
 });
 
-// dashboard for all roles
-Route::get('/dashboard', [DashboardController::class, 'index'])->prefix('app')->middleware(['auth', 'hasNoRole', 'role:teacher,admin,editor'])->name('ux.dashboard');
-
-// single routes
-Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-
 // maintenance mode routes
 Route::get('/maintenance', function () {
     return Inertia::render('Errors/Maintenance');
 })->name('maintenance');
 
 // other routes files
+include __DIR__ . '/ui.php'; // for ui routes
 include __DIR__ . '/admin.php'; // for admin routes
 include __DIR__ . '/teacher.php'; // for teacher routes
 include __DIR__ . '/global.php'; // for all uers routes

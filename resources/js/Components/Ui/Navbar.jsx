@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "../Parts/Logo";
 import { Link } from "@inertiajs/react";
 import { ArrowRight, Menu, X } from "lucide-react";
@@ -6,8 +6,9 @@ import Mneu from "./Mneu";
 
 export default function Navbar() {
     const [menuToggler, setMenuToggler] = useState(false);
+
     return (
-        <div className="bg-primary h-[70px] lg:h-[100px] flex-center border-b border-neutral/20">
+        <div className={`bg-primary h-[70px] lg:h-[100px] flex-center border-b border-neutral/20`}>
             <div className="container flex-between">
                 {/* logo */}
                 <Logo className="h-[40px]" />

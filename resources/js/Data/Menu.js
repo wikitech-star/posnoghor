@@ -5,9 +5,9 @@ const SITE_MENU = [
         active: ["home"],
     },
     {
-        name: "আমদের সম্পর্কে",
-        url: route("home"),
-        active: ["home"],
+        name: "মুল্য তালিকা",
+        url: route("price.list"),
+        active: ["price.list"],
     },
     {
         name: "সকল ক্লাস",

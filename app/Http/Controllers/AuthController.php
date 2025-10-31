@@ -43,6 +43,9 @@ class AuthController extends Controller
         try {
             // login account
             if (Auth::attempt($request->only('email', 'password'), $request->remeber)) {
+                if (Auth::user()->role == 'teacher') {
+                    return redirect()->intended(route('tech.dashboard'));
+                }
                 return redirect()->intended(route('ux.dashboard'));
             } else {
                 return redirect()->back()->with('error', 'লগিন তথ্য সঠিক নয়.');
@@ -84,8 +87,14 @@ class AuthController extends Controller
             $use->password = bcrypt($request->password);
             $use->save();
 
+
+            $user = User::find($use->id);
+
             // login account
             if (Auth::attempt($request->only("email", "password"), true)) {
+                if (Auth::user()->role == 'teacher') {
+                    return redirect()->route('tech.dashboard');
+                }
                 return redirect()->route('ux.dashboard');
             } else {
                 return redirect()->route('login')->with('success', 'একাউন্ট তৈরি করা সফল হয়েছে। লগইন করুন.');
@@ -145,6 +154,9 @@ class AuthController extends Controller
             }
             $user->save();
 
+            if ($request->role == 'teacher') {
+                return redirect()->route('tech.dashboard')->with('success', 'একাউন্ট এর ধরন সফলভাবে সংরক্ষিত হয়েছে।');
+            }
             return redirect()->route('ux.dashboard')->with('success', 'একাউন্ট এর ধরন সফলভাবে সংরক্ষিত হয়েছে।');
         } catch (\Exception $th) {
             return redirect()->back()->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
@@ -283,6 +295,9 @@ class AuthController extends Controller
 
             Auth::login($user);
 
+            if (Auth::user()->role == 'teacher') {
+                return redirect()->intended(route('tech.dashboard'));
+            }
             return redirect()->intended(route('ux.dashboard'));
         } catch (\Exception $th) {
             return redirect()->route('login')->with('error', 'সার্ভার সমাস্যা আবার চেষ্টা করুন.' . env('APP_ENV') == 'local' ?? $th->getMessage());
