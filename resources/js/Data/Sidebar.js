@@ -77,7 +77,7 @@ const ADMIN_SIDEBAR = [
         icon: BadgeQuestionMark,
         link: route("ux.question.all"),
         active: ["ux.question.all"],
-        role: ["admin", "editor", "support"],
+        role: ["admin", "editor"],
         pro: false,
     },
     {
@@ -85,7 +85,7 @@ const ADMIN_SIDEBAR = [
         icon: BadgePlus,
         link: route("ux.question.add"),
         active: ["ux.question.add"],
-        role: ["admin", "editor", "support"],
+        role: ["admin", "editor"],
         pro: false,
     },
     {
@@ -171,7 +171,7 @@ const ADMIN_SIDEBAR = [
         icon: FileQuestion,
         link: route("g.all.questions.papper"),
         active: ["g.all.questions.papper", "g.questions.papper.details"],
-        role: ["teacher", "admin", "editor"],
+        role: ["teacher"],
         pro: false,
     },
     {

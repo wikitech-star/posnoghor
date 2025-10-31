@@ -13,7 +13,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             }`}
         >
             {/* header */}
-            <div className="flex-between h-[70px] sticky top-0 bg-neutral px-5 border-b border-b-white/20">
+            <div className="flex-between h-[70px] sticky top-0 bg-neutral px-5 border-b border-b-white/20 z-30">
                 <Logo />
 
                 <button
