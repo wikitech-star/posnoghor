@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\InstituteRequestController;
+use App\Http\Controllers\Backend\Package\PackageController;
 use App\Http\Controllers\Backend\Question\QuestionController;
 use App\Http\Controllers\Backend\School\GroupClassController;
 use App\Http\Controllers\Backend\School\LassionController;
@@ -62,6 +63,14 @@ Route::middleware(['auth', 'hasNoRole', 'role:admin'])->prefix('app')->group(fun
         Route::get('/institute-name-request', 'index')->name('ux.institute.name.request');
         Route::get('/institute-name-request/{id}', 'accept')->name('ux.institute.name.request.accept');
         Route::get('/institute-name-request/del/{id}', 'delete')->name('ux.institute.name.request.del');
+    });
+
+    // packgaes
+    Route::controller(PackageController::class)->group(function () {
+        Route::get('/package-list', 'index')->name('ux.package.list');
+        Route::get('/package-add', 'add_view')->name('ux.package.add');
+        Route::post('/package-add', 'store')->name('ux.package.post');
+        Route::get('/package/{id}', 'delete')->name('ux.package.del');
     });
 
     // setting routes

@@ -95,7 +95,7 @@ export default function PaperDetails({
     const [setBgColor, setSetBgColor] = useState("#ffffff");
     const [setTextColor, setSetTextColor] = useState("#000000");
     useEffect(() => {
-        if (!set || !setBg) {
+        if (!set) {
             setSetInstrcutorName(false);
             setSetInstrcutorNameProfile(false);
             setSetLectureNo(false);
@@ -105,7 +105,13 @@ export default function PaperDetails({
             setSetBgColor("#ffffff");
             setSetTextColor("#000000");
         }
-    }, [set, setBg]);
+    }, [set]);
+    useEffect(() => {
+        if (!setBg) {
+            setSetBgColor("#ffffff");
+            setSetTextColor("#000000");
+        }
+    }, [setBg]);
 
     // data
     const [mcqQuestions, setMcqQuestions] = useState([]);
